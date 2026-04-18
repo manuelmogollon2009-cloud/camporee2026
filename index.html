@@ -237,6 +237,10 @@ tr:last-child td{border-bottom:none}
         </div>
       </div>
       <p style="font-size:12px;color:#999;text-align:center;margin-top:10px">¿Olvidaste tu clave? Contacta al administrador</p>
+      <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #e5e5e0">
+        <p style="font-size:10px;color:#bbb">Desarrollado por <span style="color:#999;font-weight:600">Manuel Mogollón</span></p>
+        <p style="font-size:10px;color:#bbb;margin-top:2px">Ministerio Juvenil · Asociación Centro Occidental · 2026</p>
+      </div>
     </div>
   </div>
 </div>
@@ -310,11 +314,15 @@ tr:last-child td{border-bottom:none}
         <button class="tab-btn active" onclick="gestTab('clubes')" id="gtab-clubes">Clubes</button>
         <button class="tab-btn" onclick="gestTab('evaluadores')" id="gtab-evaluadores">Evaluadores</button>
         <button class="tab-btn" onclick="gestTab('admins')" id="gtab-admins">Administradores</button>
+        <button class="tab-btn" onclick="gestTab('eventos')" id="gtab-eventos">Eventos</button>
+        <button class="tab-btn" onclick="gestTab('historial')" id="gtab-historial">Historial ★</button>
         <button class="tab-btn" onclick="gestTab('credenciales')" id="gtab-credenciales">Credenciales</button>
       </div>
       <div id="gp-clubes"><div id="gestion-clubes"></div></div>
       <div id="gp-evaluadores" style="display:none"><div id="gestion-evaluadores"></div></div>
       <div id="gp-admins" style="display:none"><div id="gestion-admins"></div></div>
+      <div id="gp-eventos" style="display:none"><div id="gestion-eventos"></div></div>
+      <div id="gp-historial" style="display:none"><div id="gestion-historial"></div></div>
       <div id="gp-credenciales" style="display:none"><div id="gestion-creds"></div></div>
     </div>
   </div>
@@ -386,8 +394,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <script>
-const MAX_PTS=6650;
-const EVENTS=[
+let EVENTS=[
   {id:1,div:1,name:'Inscripción a tiempo',max:150,evalIds:[101]},
   {id:2,div:1,name:'Carpeta de registro',max:50,evalIds:[101]},
   {id:3,div:1,name:'Carpeta de documentos',max:300,evalIds:[101]},
@@ -420,18 +427,20 @@ const EVENTS=[
 const DIVNAMES={1:'División 1 — Registro',2:'División 2 — Pre-Camporee',3:'División 3 — Bíblicos',4:'División 4 — Deportivos',5:'División 5 — Técnicos'};
 const DIVKEYS=[1,2,3,4,5];
 
+function getMaxPts(){return EVENTS.filter(e=>!e.cat).reduce((a,b)=>a+b.max,0)+Math.max(...['kids','junior','senior'].map(cat=>EVENTS.filter(e=>e.cat===cat).reduce((a,b)=>a+b.max,0)),0);}
+
 let ST={scores:[],current:null,editIdx:null,editUserIdx:null,editUserType:null,unsubscribe:null};
 let DB={
   clubs:[
-    {id:10,name:'Neolaia',cat:'kids',pass:'neo#4821'},
-    {id:11,name:'Centinela',cat:'kids',pass:'cen#7053'},
-    {id:12,name:'Fuerza de Dios',cat:'kids',pass:'fue#2694'},
-    {id:13,name:'Valdenses',cat:'junior',pass:'val#3817'},
-    {id:14,name:'Admiel',cat:'junior',pass:'adm#5062'},
-    {id:15,name:'Josué',cat:'junior',pass:'jos#9143'},
-    {id:16,name:'Gedeón',cat:'senior',pass:'ged#7730'},
-    {id:17,name:'G-12',cat:'senior',pass:'g12#4455'},
-    {id:18,name:'Luther Warren',cat:'senior',pass:'lut#8829'},
+    {id:10,name:'Neolaia',cat:'kids',pass:'neo#4821',historial:{}},
+    {id:11,name:'Centinela',cat:'kids',pass:'cen#7053',historial:{}},
+    {id:12,name:'Fuerza de Dios',cat:'kids',pass:'fue#2694',historial:{}},
+    {id:13,name:'Valdenses',cat:'junior',pass:'val#3817',historial:{}},
+    {id:14,name:'Admiel',cat:'junior',pass:'adm#5062',historial:{}},
+    {id:15,name:'Josué',cat:'junior',pass:'jos#9143',historial:{}},
+    {id:16,name:'Gedeón',cat:'senior',pass:'ged#7730',historial:{}},
+    {id:17,name:'G-12',cat:'senior',pass:'g12#4455',historial:{}},
+    {id:18,name:'Luther Warren',cat:'senior',pass:'lut#8829',historial:{}},
   ],
   evaluadores:[
     {id:101,name:'Hilda Cuadrados',pass:'hil#3847',evalIds:[1,2,3]},
@@ -459,7 +468,8 @@ let DB={
     {id:1,name:'Jorge García',pass:'camporee2026jorge'},
     {id:2,name:'Manuel Mogollón',pass:'camporee2026manuel'},
   ],
-  nextId:200
+  nextId:200,
+  nextEventId:29
 };
 
 function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
@@ -498,7 +508,10 @@ async function saveScoresToFirebase(){
 async function saveDBToFirebase(){
   const{doc,setDoc}=window.dbFuncs;
   const db=window.DB_REF;
-  try{await setDoc(doc(db,'camporee','db'),{data:DB,updatedAt:Date.now()});}catch(e){console.error(e);}
+  try{
+    await setDoc(doc(db,'camporee','db'),{data:DB,updatedAt:Date.now()});
+    await setDoc(doc(db,'camporee','events'),{data:EVENTS,updatedAt:Date.now()});
+  }catch(e){console.error(e);}
 }
 
 function startRealtimeSync(){
@@ -604,13 +617,15 @@ function admTab(t){
 }
 
 function gestTab(t){
-  ['clubes','evaluadores','admins','credenciales'].forEach(x=>{
+  ['clubes','evaluadores','admins','eventos','historial','credenciales'].forEach(x=>{
     document.getElementById('gp-'+x).style.display=x===t?'block':'none';
     document.getElementById('gtab-'+x).classList.toggle('active',x===t);
   });
   if(t==='clubes')renderGestionClubes();
   if(t==='evaluadores')renderGestionEvaluadores();
   if(t==='admins')renderGestionAdmins();
+  if(t==='eventos')renderGestionEventos();
+  if(t==='historial')renderGestionHistorial();
   if(t==='credenciales')renderGestionCreds();
 }
 
@@ -629,9 +644,9 @@ function renderAdmMetrics(){
 
 function renderRankings(){
   ['kids','junior','senior'].forEach(cat=>{
-    const ranked=DB.clubs.filter(c=>c.cat===cat).map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/MAX_PTS*100);return{...c,total,pct,star:getStarInfo(pct)};}).sort((a,b)=>b.total-a.total);
+    const ranked=DB.clubs.filter(c=>c.cat===cat).map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/getMaxPts()*100);return{...c,total,pct,star:getStarInfo(pct)};}).sort((a,b)=>b.total-a.total);
     let html=`<thead><tr><th style="width:28px">#</th><th>Club</th><th>Pts</th><th>Nivel</th></tr></thead><tbody>`;
-    ranked.forEach((c,i)=>{html+=`<tr><td style="font-size:16px">${posMedal(i+1)}</td><td style="font-size:12px">${c.name}</td><td>${scoreBadge(c.total,MAX_PTS)}</td><td style="font-size:13px;color:${c.star.color}">${c.star.stars}</td></tr>`;});
+    ranked.forEach((c,i)=>{html+=`<tr><td style="font-size:16px">${posMedal(i+1)}</td><td style="font-size:12px">${c.name}</td><td>${scoreBadge(c.total,getMaxPts())}</td><td style="font-size:13px;color:${c.star.color}">${c.star.stars}</td></tr>`;});
     document.getElementById('rank-'+cat).innerHTML=html+'</tbody>';
   });
 }
@@ -701,12 +716,12 @@ function renderEstrellasGrupos(){
   ];
   let any=false;
   levels.forEach(lv=>{
-    const clubsInLevel=DB.clubs.map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/MAX_PTS*100);const pos=getPosInfo(c.id);return{...c,total,pct,star:getStarInfo(pct),pos};}).filter(c=>c.star.n===lv.n).sort((a,b)=>b.total-a.total);
+    const clubsInLevel=DB.clubs.map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/getMaxPts()*100);const pos=getPosInfo(c.id);return{...c,total,pct,star:getStarInfo(pct),pos};}).filter(c=>c.star.n===lv.n).sort((a,b)=>b.total-a.total);
     if(!clubsInLevel.length)return;any=true;
     let items='';
     clubsInLevel.forEach((c,i)=>{
       const nextPct=lv.n<6?[49,63,77,91][lv.n-2]:null;
-      const ptsToNext=nextPct?Math.ceil((nextPct/100)*MAX_PTS)-c.total:0;
+      const ptsToNext=nextPct?Math.ceil((nextPct/100)*getMaxPts())-c.total:0;
       items+=`<div class="star-club-item">
         <span style="font-size:15px;font-weight:700;color:${lv.color};width:24px">${i+1}.</span>
         <div class="avatar ${avCls(c.cat)}">${initials(c.name)}</div>
@@ -799,7 +814,7 @@ async function admSubmit(){
 function renderClubsDetail(){
   const el=document.getElementById('clubs-detail');el.innerHTML='';
   DB.clubs.forEach(c=>{
-    const total=clubTotal(c.id);const pct=Math.round(total/MAX_PTS*100);const star=getStarInfo(pct);const pos=getPosInfo(c.id);
+    const total=clubTotal(c.id);const pct=Math.round(total/getMaxPts()*100);const star=getStarInfo(pct);const pos=getPosInfo(c.id);
     const clubEvts=EVENTS.filter(e=>!e.cat||e.cat===c.cat);
     let secHtml='';
     DIVKEYS.forEach(div=>{
@@ -905,6 +920,113 @@ function renderGestionAdmins(){
   html+='</div>';el.innerHTML=html;
 }
 
+function renderGestionEventos(){
+  const el=document.getElementById('gestion-eventos');
+  const maxPts=getMaxPts();
+  let html=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:14px;font-weight:700">Eventos (${EVENTS.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="openEventModal('new')">+ Agregar evento</button>
+    </div>
+    <p style="font-size:12px;color:#1D9E75;margin-bottom:14px;font-weight:600">Total máximo actual: ${maxPts} pts</p>`;
+  DIVKEYS.forEach(div=>{
+    const evts=EVENTS.filter(e=>e.div===div);if(!evts.length)return;
+    html+=`<p class="sec-label">${DIVNAMES[div]}</p>`;
+    evts.forEach(ev=>{
+      html+=`<div class="user-item">
+        <div style="flex:1"><p style="font-size:13px;font-weight:600">${ev.name}</p>
+        <p style="font-size:11px;color:#666">${ev.max} pts${ev.cat?' · Solo '+ev.cat:' · Todos los clubes'}</p></div>
+        <button class="btn btn-edit btn-sm" onclick="openEventModal('edit',${ev.id})">✏️ Editar</button>
+      </div>`;
+    });
+  });
+  html+='</div>';el.innerHTML=html;
+}
+
+function openEventModal(mode,id){
+  const ev=mode==='edit'?EVENTS.find(e=>e.id===id):null;
+  const title=mode==='new'?'Agregar evento':'Editar evento';
+  const divOpts=DIVKEYS.map(d=>`<option value="${d}" ${ev&&ev.div===d?'selected':''}>${DIVNAMES[d]}</option>`).join('');
+  const catOpts=`<option value="" ${!ev||!ev.cat?'selected':''}>Todos los clubes</option>
+    <option value="kids" ${ev&&ev.cat==='kids'?'selected':''}>Solo Kids</option>
+    <option value="junior" ${ev&&ev.cat==='junior'?'selected':''}>Solo Junior</option>
+    <option value="senior" ${ev&&ev.cat==='senior'?'selected':''}>Solo Senior</option>`;
+  document.getElementById('modal-user-title').textContent=title;
+  document.getElementById('modal-user-body').innerHTML=`
+    <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre del evento</label>
+    <input id="mu-name" placeholder="ej. Declamación bíblica" value="${ev?ev.name:''}"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">División</label>
+      <select id="mu-div">${divOpts}</select></div>
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Puntaje máximo</label>
+      <input id="mu-max" type="number" min="1" placeholder="ej. 300" value="${ev?ev.max:''}"></div>
+    </div>
+    <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Aplica para</label>
+    <select id="mu-cat">${catOpts}</select></div>
+    <input type="hidden" id="mu-event-id" value="${ev?ev.id:''}">
+    <input type="hidden" id="mu-mode" value="${mode}">`;
+  document.getElementById('modal-user-err').style.display='none';
+  ST.editUserType='evento';
+  document.getElementById('modal-user').classList.add('open');
+}
+
+function renderGestionHistorial(){
+  const el=document.getElementById('gestion-historial');
+  let html=`<div class="card">
+    <p style="font-size:13px;color:#666;margin-bottom:16px">Registre aquí el nivel de estrellas que obtuvo cada club en años anteriores. Los clubes lo verán como referencia.</p>`;
+  ['kids','junior','senior'].forEach(cat=>{
+    html+=`<p class="sec-label">${catName(cat)}</p>`;
+    DB.clubs.filter(c=>c.cat===cat).forEach(c=>{
+      const hist=c.historial||{};
+      const years=Object.keys(hist).sort().reverse();
+      html+=`<div style="padding:10px 0;border-bottom:1px solid #f0f0ea">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="avatar ${avCls(c.cat)}">${initials(c.name)}</div>
+            <p style="font-size:13px;font-weight:600">${c.name}</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openHistorialModal(${c.id})">+ Agregar año</button>
+        </div>
+        ${years.length?years.map(y=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:12px;color:#666;min-width:40px">${y}:</span>
+          <span style="font-size:14px">${getStarInfo(0).stars.repeat(0)}${'★'.repeat(hist[y])}</span>
+          <span style="font-size:12px;color:#666">${hist[y]} estrella${hist[y]>1?'s':''}</span>
+          <button class="btn btn-sm" style="padding:2px 8px;font-size:11px;color:#A32D2D;border-color:#F09595" onclick="deleteHistorial(${c.id},'${y}')">✕</button>
+        </div>`).join(''):'<p style="font-size:12px;color:#bbb">Sin historial registrado</p>'}
+      </div>`;
+    });
+  });
+  html+='</div>';el.innerHTML=html;
+}
+
+function openHistorialModal(clubId){
+  const club=DB.clubs.find(c=>c.id===clubId);
+  document.getElementById('modal-user-title').textContent=`Historial — ${club.name}`;
+  document.getElementById('modal-user-body').innerHTML=`
+    <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Año</label>
+    <input id="mu-year" type="number" placeholder="ej. 2025" value="${new Date().getFullYear()-1}"></div>
+    <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Estrellas obtenidas</label>
+    <select id="mu-stars">
+      <option value="2">★★ 2 Estrellas (0%–48%)</option>
+      <option value="3">★★★ 3 Estrellas (49%–62%)</option>
+      <option value="4">★★★★ 4 Estrellas (63%–76%)</option>
+      <option value="5">★★★★★ 5 Estrellas (77%–90%)</option>
+      <option value="6">★★★★★★ 6 Estrellas (91%–100%)</option>
+    </select></div>
+    <input type="hidden" id="mu-hist-club" value="${clubId}">`;
+  document.getElementById('modal-user-err').style.display='none';
+  ST.editUserType='historial';
+  document.getElementById('modal-user').classList.add('open');
+}
+
+async function deleteHistorial(clubId,year){
+  const club=DB.clubs.find(c=>c.id===clubId);
+  if(!club.historial)club.historial={};
+  delete club.historial[year];
+  await saveDBToFirebase();
+  renderGestionHistorial();
+}
+
 function renderGestionCreds(){
   const el=document.getElementById('gestion-creds');
   let html=`<div class="card"><p style="font-size:13px;color:#666;margin-bottom:16px">Distribuye estas claves de forma privada.</p>`;
@@ -958,15 +1080,49 @@ function openUserModal(type,mode,id){
 }
 
 async function saveUser(){
-  const type=ST.editUserType;const id=ST.editUserIdx;
+  const type=ST.editUserType;
   const err=document.getElementById('modal-user-err');
+
+  if(type==='evento'){
+    const name=document.getElementById('mu-name').value.trim();
+    const div=parseInt(document.getElementById('mu-div').value);
+    const max=parseInt(document.getElementById('mu-max').value);
+    const cat=document.getElementById('mu-cat').value||undefined;
+    const mode=document.getElementById('mu-mode').value;
+    const evId=parseInt(document.getElementById('mu-event-id').value);
+    if(!name||!max){err.style.display='block';err.textContent='Nombre y puntaje son obligatorios.';return;}
+    if(mode==='edit'){
+      const ev=EVENTS.find(e=>e.id===evId);
+      ev.name=name;ev.div=div;ev.max=max;ev.cat=cat;
+    } else {
+      EVENTS.push({id:DB.nextEventId++,div,name,max,evalIds:[],cat});
+    }
+    await saveDBToFirebase();closeModal('modal-user');
+    renderGestionEventos();populateAdmSelects();
+    return;
+  }
+
+  if(type==='historial'){
+    const clubId=parseInt(document.getElementById('mu-hist-club').value);
+    const year=document.getElementById('mu-year').value.trim();
+    const stars=parseInt(document.getElementById('mu-stars').value);
+    if(!year){err.style.display='block';err.textContent='El año es obligatorio.';return;}
+    const club=DB.clubs.find(c=>c.id===clubId);
+    if(!club.historial)club.historial={};
+    club.historial[year]=stars;
+    await saveDBToFirebase();closeModal('modal-user');
+    renderGestionHistorial();
+    return;
+  }
+
+  const id=ST.editUserIdx;
   const name=document.getElementById('mu-name').value.trim();
   const pass=document.getElementById('mu-pass').value.trim();
   if(!name||!pass){err.style.display='block';err.textContent='Nombre y contraseña son obligatorios.';return;}
   if(type==='club'){
     const cat=document.getElementById('mu-cat').value;
     if(id){const c=DB.clubs.find(x=>x.id===id);c.name=name;c.pass=pass;c.cat=cat;}
-    else{DB.clubs.push({id:DB.nextId++,name,cat,pass});}
+    else{DB.clubs.push({id:DB.nextId++,name,cat,pass,historial:{}});}
   } else if(type==='eval'){
     const evalIds=Array.from(document.querySelectorAll('#mu-events input:checked')).map(x=>parseInt(x.value));
     if(id){const e=DB.evaluadores.find(x=>x.id===id);e.name=name;e.pass=pass;e.evalIds=evalIds;}
@@ -1052,7 +1208,7 @@ function renderClub(){
       <div class="avatar ${avCls(club.cat)}">${initials(club.name)}</div>
       <div>${catTag(club.cat)}<h2 style="font-size:18px;font-weight:700;margin-top:4px">${club.name}</h2></div>
     </div>`;
-  const total=clubTotal(club.id);const pct=Math.round(total/MAX_PTS*100);
+  const total=clubTotal(club.id);const pct=Math.round(total/getMaxPts()*100);
   const star=getStarInfo(pct);const pos=getPosInfo(club.id);
   const c1=posCardColor(pos.posCat);const c2=posCardColor(pos.posGeneral);
   document.getElementById('club-pos-cards').innerHTML=`
@@ -1069,7 +1225,18 @@ function renderClub(){
       </div>
     </div>`;
   const nextPct=star.n<6?[49,63,77,91][star.n-2]:null;
-  const ptsToNext=nextPct?Math.ceil((nextPct/100)*MAX_PTS)-total:0;
+  const ptsToNext=nextPct?Math.ceil((nextPct/100)*getMaxPts())-total:0;
+  const hist=club.historial||{};
+  const histYears=Object.keys(hist).sort().reverse();
+  const histHtml=histYears.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.08)">
+    <p style="font-size:11px;font-weight:600;color:${star.color};margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Historial de años anteriores</p>
+    ${histYears.map(y=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+      <span style="font-size:12px;color:#666;min-width:36px">${y}:</span>
+      <span style="font-size:14px">${'★'.repeat(hist[y])}</span>
+      <span style="font-size:11px;color:#666">${hist[y]} estrella${hist[y]>1?'s':''}</span>
+      ${hist[y]<star.n?'<span style="font-size:11px;color:#1D9E75;font-weight:600">↑ ¡Mejoraste!</span>':hist[y]>star.n?'<span style="font-size:11px;color:#A32D2D;font-weight:600">↓ A superarlo</span>':'<span style="font-size:11px;color:#666">= Igual que antes</span>'}
+    </div>`).join('')}
+  </div>`:'';
   document.getElementById('club-star-banner').innerHTML=`
     <div class="card" style="background:${star.hdr}">
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
@@ -1084,6 +1251,7 @@ function renderClub(){
       <div style="display:flex;justify-content:space-between;font-size:10px;color:#bbb;margin-top:4px">
         <span>0%</span><span>49%★★★</span><span>63%★★★★</span><span>77%★★★★★</span><span>91%★×6</span><span>100%</span>
       </div>
+      ${histHtml}
     </div>`;
   document.getElementById('club-metrics').innerHTML=`
     <div class="metric"><div class="metric-val">${ST.scores.filter(s=>s.clubId===club.id).length}</div><div class="metric-lbl">Eventos evaluados</div></div>
@@ -1130,7 +1298,7 @@ function generarPDF(){
     if(y>255){doc.addPage();y=20;}
     const label=cat==='kids'?'CATEGORIA KIDS':cat==='junior'?'CATEGORIA JUNIOR':'CATEGORIA SENIOR';
     doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(29,158,117);doc.text(label,14,y);y+=7;
-    const ranked=DB.clubs.filter(c=>c.cat===cat).map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/MAX_PTS*100);const pos=getPosInfo(c.id);return{...c,total,pct,star:getStarInfo(pct),pos};}).sort((a,b)=>b.total-a.total);
+    const ranked=DB.clubs.filter(c=>c.cat===cat).map(c=>{const total=clubTotal(c.id);const pct=Math.round(total/getMaxPts()*100);const pos=getPosInfo(c.id);return{...c,total,pct,star:getStarInfo(pct),pos};}).sort((a,b)=>b.total-a.total);
     doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(80,80,80);
     doc.text('Pos.',14,y);doc.text('Club',28,y);doc.text('Pts',95,y);doc.text('%',115,y);doc.text('Nivel',130,y);doc.text('Gral.',170,y);
     y+=2;doc.setDrawColor(220,220,220);doc.line(14,y,196,y);y+=5;
@@ -1161,11 +1329,13 @@ function generarPDF(){
 }
 
 window.addEventListener('firebase-ready', async()=>{
-  const{doc,getDoc,onSnapshot}=window.dbFuncs;
+  const{doc,getDoc}=window.dbFuncs;
   const db=window.DB_REF;
   try{
     const dbSnap=await getDoc(doc(db,'camporee','db'));
     if(dbSnap.exists())DB=dbSnap.data().data;
+    const evSnap=await getDoc(doc(db,'camporee','events'));
+    if(evSnap.exists()&&evSnap.data().data.length)EVENTS.splice(0,EVENTS.length,...evSnap.data().data);
     const scSnap=await getDoc(doc(db,'camporee','scores'));
     if(scSnap.exists())ST.scores=scSnap.data().data||[];
   }catch(e){console.log('Usando datos locales');}
