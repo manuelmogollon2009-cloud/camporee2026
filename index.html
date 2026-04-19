@@ -3,7 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Camporee Valientes 2026 — Control de Puntaje</title>
+<title>Control de Puntajes</title>
+<meta name="application-name" content="Control de Puntajes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Control de Puntajes">
+<meta name="description" content="Camporee de Conquistadores Valientes 2026 — Control de Puntaje">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1D9E75">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D9E75'/><polygon points='50,10 61,35 88,38 68,57 74,84 50,70 26,84 32,57 12,38 39,35' fill='white'/></svg>">
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    const sw=`
+self.addEventListener('install',e=>e.waitUntil(
+  caches.open('camporee-v1').then(c=>c.addAll(['/asocentro/']))
+));
+self.addEventListener('fetch',e=>e.respondWith(
+  caches.match(e.request).then(r=>r||fetch(e.request))
+));`;
+    const blob=new Blob([sw],{type:'application/javascript'});
+    const url=URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).catch(()=>{});
+  });
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(()=>{
+    const banner=document.getElementById('install-banner');
+    if(banner)banner.style.display='flex';
+  },3000);
+});
+window.addEventListener('appinstalled',()=>{
+  const banner=document.getElementById('install-banner');
+  if(banner)banner.style.display='none';
+});
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;const banner=document.getElementById('install-banner');if(banner)banner.style.display='none';});}
+}
+function closeBanner(){const banner=document.getElementById('install-banner');if(banner)banner.style.display='none';}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -146,6 +187,21 @@ tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
+
+<!-- BANNER INSTALAR APP -->
+<div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1D9E75;color:#fff;padding:12px 16px;align-items:center;justify-content:space-between;gap:10px;z-index:999;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <svg width="28" height="28" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="white"/></svg>
+    <div>
+      <p style="font-size:13px;font-weight:700">Instalar Control de Puntajes</p>
+      <p style="font-size:11px;opacity:0.85">Agregar a la pantalla de inicio</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button onclick="closeBanner()" style="padding:6px 12px;border:1px solid rgba(255,255,255,0.5);border-radius:8px;background:transparent;color:#fff;cursor:pointer;font-size:12px">Ahora no</button>
+    <button onclick="installApp()" style="padding:6px 14px;border:none;border-radius:8px;background:#fff;color:#1D9E75;cursor:pointer;font-size:12px;font-weight:700">Instalar</button>
+  </div>
+</div>
 
 <!-- LOADING -->
 <div id="sc-loading" style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px">

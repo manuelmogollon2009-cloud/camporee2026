@@ -1,0 +1,22 @@
+{
+  "name": "Control de Puntajes",
+  "short_name": "Control de Puntajes",
+  "description": "Camporee de Conquistadores Valientes 2026 — Control de Puntaje",
+  "start_url": "/asocentro/",
+  "display": "standalone",
+  "background_color": "#f5f5f0",
+  "theme_color": "#1D9E75",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='38' fill='%231D9E75'/><polygon points='96,20 117,72 172,76 131,113 143,168 96,140 49,168 61,113 20,76 75,72' fill='white'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%231D9E75'/><polygon points='256,50 310,190 460,200 345,300 385,450 256,365 127,450 167,300 52,200 202,190' fill='white'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
