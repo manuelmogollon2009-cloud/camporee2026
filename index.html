@@ -970,15 +970,19 @@ function renderGestionClubes(){
     html+=`<p class="sec-label">${catName(cat)}</p>`;
     cats.forEach(c=>{
       html+=`<div class="user-item">
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex:1">
           <div class="avatar ${avCls(c.cat)}">${initials(c.name)}</div>
           <div><p style="font-size:13px;font-weight:600">${c.name}</p>
           <p style="font-size:11px;color:#666">Clave: <code style="background:#f5f5f0;padding:2px 6px;border-radius:4px">${c.pass}</code></p></div>
         </div>
-        <button class="btn btn-edit btn-sm" onclick="openUserModal('club','edit',${c.id})">✏️ Editar</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-edit btn-sm" onclick="openUserModal('club','edit',${c.id})">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="eliminarUsuario('club',${c.id},'${c.name}')">🗑️</button>
+        </div>
       </div>`;
     });
   });
+  if(!DB.clubs.length)html+=`<p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin clubes registrados.</p>`;
   html+='</div>';el.innerHTML=html;
 }
 
@@ -994,9 +998,13 @@ function renderGestionEvaluadores(){
       <div style="flex:1"><p style="font-size:13px;font-weight:600">${e.name}</p>
       <p style="font-size:11px;color:#666">Clave: <code style="background:#f5f5f0;padding:2px 6px;border-radius:4px">${e.pass}</code></p>
       <p style="font-size:11px;color:#888;margin-top:3px">Eventos: ${evNames||'Ninguno'}</p></div>
-      <button class="btn btn-edit btn-sm" onclick="openUserModal('eval','edit',${e.id})">✏️ Editar</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-edit btn-sm" onclick="openUserModal('eval','edit',${e.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarUsuario('eval',${e.id},'${e.name}')">🗑️</button>
+      </div>
     </div>`;
   });
+  if(!DB.evaluadores.length)html+=`<p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin evaluadores registrados.</p>`;
   html+='</div>';el.innerHTML=html;
 }
 
@@ -1008,12 +1016,15 @@ function renderGestionAdmins(){
   </div>`;
   DB.admins.forEach(a=>{
     html+=`<div class="user-item">
-      <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
         <div class="avatar av-a">${initials(a.name)}</div>
         <div><p style="font-size:13px;font-weight:600">${a.name}</p>
         <p style="font-size:11px;color:#666">Clave: <code style="background:#f5f5f0;padding:2px 6px;border-radius:4px">${a.pass}</code></p></div>
       </div>
-      <button class="btn btn-edit btn-sm" onclick="openUserModal('admin','edit',${a.id})">✏️ Editar</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-edit btn-sm" onclick="openUserModal('admin','edit',${a.id})">✏️</button>
+        ${DB.admins.length>1?`<button class="btn btn-sm btn-danger" onclick="eliminarUsuario('admin',${a.id},'${a.name}')">🗑️</button>`:'<span style="font-size:11px;color:#bbb;padding:5px">Mín. 1</span>'}
+      </div>
     </div>`;
   });
   html+='</div>';el.innerHTML=html;
@@ -1137,6 +1148,24 @@ function renderGestionCreds(){
   DB.clubs.forEach(u=>{html+=`<div class="cred-row"><p style="font-size:13px;flex:1">${u.name} ${catTag(u.cat)}</p><code style="font-size:12px;background:#f5f5f0;padding:4px 10px;border-radius:6px;border:1px solid #e5e5e0">${u.pass}</code></div>`;});
   html+=`<div style="margin-top:14px"><button class="btn btn-pdf btn-sm" onclick="window.print()">Imprimir</button></div></div>`;
   el.innerHTML=html;
+}
+
+async function eliminarUsuario(tipo, id, nombre){
+  if(!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`))return;
+  if(tipo==='club'){
+    DB.clubs=DB.clubs.filter(c=>c.id!==id);
+    ST.scores=ST.scores.filter(s=>s.clubId!==id);
+    await saveScoresToFirebase();
+    renderGestionClubes();renderRankings();renderAdmMetrics();populateAdmSelects();
+  } else if(tipo==='eval'){
+    DB.evaluadores=DB.evaluadores.filter(e=>e.id!==id);
+    renderGestionEvaluadores();
+  } else if(tipo==='admin'){
+    if(DB.admins.length<=1){alert('Debe haber al menos un administrador.');return;}
+    DB.admins=DB.admins.filter(a=>a.id!==id);
+    renderGestionAdmins();
+  }
+  await saveDBToFirebase();
 }
 
 function openUserModal(type,mode,id){
