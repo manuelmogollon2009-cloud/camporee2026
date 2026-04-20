@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Puntajes</title>
-<meta name="application-name" content="Control de Puntajes">
+<title>Puntajes ACO</title>
+<meta name="application-name" content="Puntajes ACO">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Control de Puntajes">
+<meta name="apple-mobile-web-app-title" content="Puntajes ACO">
 <meta name="description" content="Camporee de Conquistadores Valientes 2026 — Control de Puntaje">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1D9E75">
@@ -316,8 +316,8 @@ tr:last-child td{border-bottom:none}
       </div>
       <p style="font-size:12px;color:#999;text-align:center;margin-top:10px">¿Olvidaste tu clave? Contacta al administrador</p>
       <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #e5e5e0">
-        <p style="font-size:10px;color:#bbb">Desarrollado por <span style="color:#999;font-weight:600">Manuel Mogollón</span></p>
-        <p style="font-size:10px;color:#bbb;margin-top:2px">Ministerio Juvenil · Asociación Centro Occidental · 2026</p>
+        <p style="font-size:9px;color:#bbb">Desarrollado por <span style="color:#999;font-weight:500">Manuel Mogollón Vivas</span></p>
+        <p style="font-size:9px;color:#bbb;margin-top:1px">Ministerio Juvenil · Asociación Centro Occidental · 2026</p>
       </div>
     </div>
   </div>
@@ -1366,7 +1366,10 @@ function renderGestionCreds(){
   DB.evaluadores.forEach(u=>{html+=`<div class="cred-row"><p style="font-size:13px;flex:1">${u.name}</p><code style="font-size:12px;background:#f5f5f0;padding:4px 10px;border-radius:6px;border:1px solid #e5e5e0">${u.pass}</code></div>`;});
   html+=`<p class="sec-label">Clubes</p>`;
   DB.clubs.forEach(u=>{html+=`<div class="cred-row"><p style="font-size:13px;flex:1">${u.name} ${catTag(u.cat)}</p><code style="font-size:12px;background:#f5f5f0;padding:4px 10px;border-radius:6px;border:1px solid #e5e5e0">${u.pass}</code></div>`;});
-  html+=`<div style="margin-top:14px"><button class="btn btn-pdf btn-sm" onclick="window.print()">Imprimir</button></div></div>`;
+  html+=`<div style="margin-top:14px;display:flex;gap:8px">
+    <button class="btn btn-pdf btn-sm" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn btn-pdf btn-sm" onclick="descargarCredsPDF()">⬇️ Descargar PDF</button>
+  </div></div>`;
   el.innerHTML=html;
 }
 
@@ -1760,6 +1763,49 @@ function renderClub(){
       }).join('')}
     </div>`;
   });
+}
+
+function descargarCredsPDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210;let y=20;
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(29,158,117);
+  doc.text('CREDENCIALES — '+( DB.campName||'Control de Puntaje'),W/2,y,{align:'center'});y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('Distribuir de forma privada a cada usuario',W/2,y,{align:'center'});y+=4;
+  doc.setDrawColor(29,158,117);doc.setLineWidth(0.5);doc.line(14,y,196,y);y+=8;
+
+  const grupos=[
+    {label:'ADMINISTRADORES',users:DB.admins.map(u=>({nombre:u.name,clave:u.pass,tipo:'Admin'}))},
+    {label:'EVALUADORES',users:DB.evaluadores.map(u=>({nombre:u.name,clave:u.pass,tipo:'Evaluador'}))},
+    {label:'CLUBES',users:DB.clubs.map(u=>({nombre:u.name,clave:u.pass,tipo:catName(u.cat)}))},
+  ];
+
+  grupos.forEach(g=>{
+    if(!g.users.length)return;
+    if(y>260){doc.addPage();y=20;}
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(29,158,117);
+    doc.text(g.label,14,y);y+=4;
+    doc.setDrawColor(200,200,200);doc.line(14,y,196,y);y+=5;
+    g.users.forEach(u=>{
+      if(y>275){doc.addPage();y=20;}
+      doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(40,40,40);
+      doc.text(u.nombre,14,y);
+      doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(29,158,117);
+      doc.text(u.clave,140,y);
+      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(150,150,150);
+      doc.text(u.tipo,185,y);
+      y+=7;
+    });
+    y+=4;
+  });
+
+  const pages=doc.getNumberOfPages();
+  for(let i=1;i<=pages;i++){
+    doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);
+    doc.text('Puntajes ACO — Confidencial',14,290);doc.text('Pág. '+i+'/'+pages,196,290,{align:'right'});
+  }
+  doc.save('Credenciales_'+( DB.campName||'Campamento').replace(/[^a-zA-Z0-9]/g,'_')+'.pdf');
 }
 
 function generarPDF(){
