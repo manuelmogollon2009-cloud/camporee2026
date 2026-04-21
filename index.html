@@ -284,7 +284,7 @@ tr:last-child td{border-bottom:none}
       </div>
       <div class="card">
         <p style="font-size:12px;font-weight:600;color:#666;margin-bottom:12px">¿Quién eres?</p>
-        <div style="display:flex;gap:10px;margin-bottom:16px">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
           <button class="btn-rol" onclick="selectRol('admin')" id="rbtn-admin">
             <div class="btn-rol-icon">👤</div>
             <div class="btn-rol-label">Administrador</div>
@@ -294,6 +294,11 @@ tr:last-child td{border-bottom:none}
             <div class="btn-rol-icon">📋</div>
             <div class="btn-rol-label">Evaluador</div>
             <div class="btn-rol-sub">Registrar puntajes</div>
+          </button>
+          <button class="btn-rol" onclick="selectRol('aprobador')" id="rbtn-aprobador">
+            <div class="btn-rol-icon">✅</div>
+            <div class="btn-rol-label">Aprobador</div>
+            <div class="btn-rol-sub">Verificar puntajes</div>
           </button>
           <button class="btn-rol" onclick="selectRol('club')" id="rbtn-club">
             <div class="btn-rol-icon">🏕️</div>
@@ -343,6 +348,7 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="tab-row">
       <button class="tab-btn active" onclick="admTab('ranking')" id="atab-ranking">Ranking</button>
+      <button class="tab-btn" onclick="admTab('aprobacion')" id="atab-aprobacion">✅ Aprobación</button>
       <button class="tab-btn" onclick="admTab('eventos')" id="atab-eventos">Por evento</button>
       <button class="tab-btn" onclick="admTab('estrellas')" id="atab-estrellas">Por estrellas</button>
       <button class="tab-btn" onclick="admTab('evaluar')" id="atab-evaluar">Evaluar</button>
@@ -350,6 +356,7 @@ tr:last-child td{border-bottom:none}
       <button class="tab-btn" onclick="admTab('historial')" id="atab-historial">Historial</button>
       <button class="tab-btn" onclick="admTab('gestion')" id="atab-gestion">⚙️ Gestión</button>
     </div>
+    <div id="ap-aprobacion" style="display:none"><div id="aprobacion-view"></div></div>
     <div id="ap-ranking">
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1rem" class="grid3" id="adm-metrics"></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" class="grid3">
@@ -395,6 +402,8 @@ tr:last-child td{border-bottom:none}
         <button class="tab-btn" onclick="gestTab('eventos')" id="gtab-eventos">Eventos</button>
         <button class="tab-btn" onclick="gestTab('divisiones')" id="gtab-divisiones">Divisiones</button>
         <button class="tab-btn" onclick="gestTab('disciplina')" id="gtab-disciplina">🛡️ Disciplina</button>
+        <button class="tab-btn" onclick="gestTab('aprobadores')" id="gtab-aprobadores">✅ Aprobadores</button>
+        <button class="tab-btn" onclick="gestTab('certificado')" id="gtab-certificado">🏅 Certificado</button>
         <button class="tab-btn" onclick="gestTab('historial')" id="gtab-historial">Historial ★</button>
         <button class="tab-btn" onclick="gestTab('credenciales')" id="gtab-credenciales">Credenciales</button>
         <button class="tab-btn" style="background:#FCEBEB;color:#791F1F;border-color:#F7C1C1" onclick="gestTab('nuevo')" id="gtab-nuevo">🔄 Nuevo campamento</button>
@@ -405,6 +414,8 @@ tr:last-child td{border-bottom:none}
       <div id="gp-eventos" style="display:none"><div id="gestion-eventos"></div></div>
       <div id="gp-divisiones" style="display:none"><div id="gestion-divisiones"></div></div>
       <div id="gp-disciplina" style="display:none"><div id="gestion-disciplina"></div></div>
+      <div id="gp-aprobadores" style="display:none"><div id="gestion-aprobadores"></div></div>
+      <div id="gp-certificado" style="display:none"><div id="gestion-certificado"></div></div>
       <div id="gp-historial" style="display:none"><div id="gestion-historial"></div></div>
       <div id="gp-credenciales" style="display:none"><div id="gestion-creds"></div></div>
       <div id="gp-nuevo" style="display:none">
@@ -424,6 +435,31 @@ tr:last-child td{border-bottom:none}
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- APROBADOR -->
+<div id="sc-aprobador" class="screen">
+  <div class="container">
+    <div class="header">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#1D9E75;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px" id="aprobador-campname">Camporee Valientes 2026</div>
+        <span style="display:inline-block;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:600;background:#E8F5E9;color:#1B5E20">✅ Aprobador</span>
+        <h2 id="aprobador-name" style="font-size:18px;font-weight:700;margin-top:4px"></h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="sync-indicator"><span class="sync-dot"></span>En vivo</span>
+        <button class="btn btn-sm" onclick="logout()">Salir</button>
+      </div>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="aprobadorTab('pendientes')" id="aptab-pendientes">⏳ Pendientes</button>
+      <button class="tab-btn" onclick="aprobadorTab('aprobados')" id="aptab-aprobados">✅ Aprobados</button>
+      <button class="tab-btn" onclick="aprobadorTab('rechazados')" id="aptab-rechazados">❌ Rechazados</button>
+    </div>
+    <div id="apr-pendientes"><div id="apr-pendientes-list"></div></div>
+    <div id="apr-aprobados" style="display:none"><div id="apr-aprobados-list"></div></div>
+    <div id="apr-rechazados" style="display:none"><div id="apr-rechazados-list"></div></div>
   </div>
 </div>
 
@@ -484,7 +520,8 @@ tr:last-child td{border-bottom:none}
   <div class="container">
     <div class="header">
       <div id="club-header-info"></div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-pdf" onclick="descargarCertificado()">🏅 Certificado</button>
         <span class="sync-indicator"><span class="sync-dot"></span>En vivo</span>
         <button class="btn btn-sm" onclick="logout()">Salir</button>
       </div>
@@ -542,7 +579,7 @@ function getMaxPts(){
   return evMax+(DB&&DB.disciplina?DB.disciplina.puntosIniciales||0:0);
 }
 
-let ST={scores:[],faltas:[],current:null,editIdx:null,editUserIdx:null,editUserType:null,unsubscribe:null};
+let ST={scores:[],faltas:[],pendientes:[],current:null,editIdx:null,editUserIdx:null,editUserType:null,unsubscribe:null};
 let DB={
   clubs:[
     {id:10,name:'Neolaia',cat:'kids',pass:'neo#4821',historial:{}},
@@ -592,7 +629,15 @@ let DB={
     4:'División 4 — Deportivos',
     5:'División 5 — Técnicos'
   },
-  nextDivId:6
+  nextDivId:6,
+  certificado:{
+    logoBase64:'',
+    fecha:'',
+    lugar:'',
+    firmante:'Pr. Jorge García',
+    cargo:'Director Ministerio Juvenil'
+  },
+  aprobadores:[]
 };
 
 function getDisciplinaTotal(clubId){
@@ -612,13 +657,28 @@ function updateCampName(){
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=name;});
 }
 
+function getDivColor(divId){
+  const colors=[
+    {bg:'#E3F2FD',border:'#90CAF9',text:'#0D47A1',bar:'#42A5F5'},
+    {bg:'#E8F5E9',border:'#A5D6A7',text:'#1B5E20',bar:'#66BB6A'},
+    {bg:'#FFF9C4',border:'#FFF176',text:'#F57F17',bar:'#FFEE58'},
+    {bg:'#FFEBEE',border:'#EF9A9A',text:'#B71C1C',bar:'#EF5350'},
+    {bg:'#FFF3E0',border:'#FFCC80',text:'#E65100',bar:'#FFA726'},
+    {bg:'#F3E5F5',border:'#CE93D8',text:'#4A148C',bar:'#AB47BC'},
+    {bg:'#E0F7FA',border:'#80DEEA',text:'#006064',bar:'#26C6DA'},
+    {bg:'#FCE4EC',border:'#F48FB1',text:'#880E4F',bar:'#EC407A'},
+  ];
+  const idx=(parseInt(divId)-1)%colors.length;
+  return colors[idx<0?0:idx];
+}
+
 function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
 function getStarInfo(pct){
-  if(pct>=91)return{n:6,label:'6 Estrellas',stars:'★★★★★★',color:'#3C3489',hdr:'#F0EFFE'};
-  if(pct>=77)return{n:5,label:'5 Estrellas',stars:'★★★★★',color:'#633806',hdr:'#FEF6EA'};
-  if(pct>=63)return{n:4,label:'4 Estrellas',stars:'★★★★',color:'#085041',hdr:'#EBF7F2'};
-  if(pct>=49)return{n:3,label:'3 Estrellas',stars:'★★★',color:'#0C447C',hdr:'#EEF6FD'};
-  return{n:2,label:'2 Estrellas',stars:'★★',color:'#666',hdr:'#f5f5f0'};
+  if(pct>=91)return{n:6,label:'6 Estrellas',stars:'★★★★★★',color:'#B8860B',hdr:'#FFFDE7',barColor:'#FFD54F'};
+  if(pct>=77)return{n:5,label:'5 Estrellas',stars:'★★★★★',color:'#795548',hdr:'#EFEBE9',barColor:'#A1887F'};
+  if(pct>=63)return{n:4,label:'4 Estrellas',stars:'★★★★',color:'#607D8B',hdr:'#ECEFF1',barColor:'#90A4AE'};
+  if(pct>=49)return{n:3,label:'3 Estrellas',stars:'★★★',color:'#E65100',hdr:'#FFF3E0',barColor:'#FFAB40'};
+  return{n:2,label:'2 Estrellas',stars:'★★',color:'#C62828',hdr:'#FFEBEE',barColor:'#EF9A9A'};
 }
 function posMedal(n){return n===1?'🥇':n===2?'🥈':n===3?'🥉':n+'°';}
 function getPosInfo(clubId){
@@ -639,6 +699,11 @@ function clubTotalConDisciplina(cid){return clubTotal(cid)+getDisciplinaTotal(ci
 function avCls(cat){return cat==='kids'?'av-k':cat==='junior'?'av-j':'av-s';}
 function catTag(cat){if(cat==='kids')return'<span class="tag tag-kids">Kids</span>';if(cat==='junior')return'<span class="tag tag-junior">Junior</span>';return'<span class="tag tag-senior">Senior</span>';}
 function catName(cat){return cat==='kids'?'Kids':cat==='junior'?'Junior':'Senior';}
+
+async function savePendientesToFirebase(){
+  const{doc,setDoc}=window.dbFuncs;const db=window.DB_REF;
+  try{await setDoc(doc(db,'camporee','pendientes'),{data:ST.pendientes,updatedAt:Date.now()});}catch(e){console.error(e);}
+}
 
 async function saveScoresToFirebase(){
   const{doc,setDoc}=window.dbFuncs;
@@ -665,7 +730,10 @@ function startRealtimeSync(){
   const unsubFaltas=onSnapshot(doc(db,'camporee','faltas'),(snap)=>{
     if(snap.exists()){ST.faltas=snap.data().data||[];refreshCurrentView();}
   });
-  ST.unsubscribe=()=>{unsubScores();unsubFaltas();};
+  const unsubPendientes=onSnapshot(doc(db,'camporee','pendientes'),(snap)=>{
+    if(snap.exists()){ST.pendientes=snap.data().data||[];refreshCurrentView();}
+  });
+  ST.unsubscribe=()=>{unsubScores();unsubFaltas();unsubPendientes();};
 }
 
 function refreshCurrentView(){
@@ -695,7 +763,7 @@ function showScreen(id){
 
 function selectRol(rol){
   ST.selectedRol=rol;
-  ['admin','eval','club'].forEach(r=>document.getElementById('rbtn-'+r).classList.toggle('active',r===rol));
+  ['admin','eval','aprobador','club'].forEach(r=>document.getElementById('rbtn-'+r).classList.toggle('active',r===rol));
   const sel=document.getElementById('login-user');
   sel.innerHTML='<option value="">Seleccionar...</option>';
   if(rol==='admin'){
@@ -704,6 +772,9 @@ function selectRol(rol){
   } else if(rol==='eval'){
     DB.evaluadores.forEach(u=>{const o=document.createElement('option');o.value='e_'+u.id;o.textContent=u.name;sel.appendChild(o);});
     document.getElementById('login-select-label').textContent='Evaluador';
+  } else if(rol==='aprobador'){
+    (DB.aprobadores||[]).forEach(u=>{const o=document.createElement('option');o.value='p_'+u.id;o.textContent=u.name;sel.appendChild(o);});
+    document.getElementById('login-select-label').textContent='Aprobador';
   } else {
     ['kids','junior','senior'].forEach(cat=>{
       const og=document.createElement('optgroup');og.label=catName(cat);
@@ -724,6 +795,7 @@ function doLogin(){
   let user=null;let role='';
   if(type==='a'){user=DB.admins.find(u=>u.id===uid);role='admin';}
   else if(type==='e'){user=DB.evaluadores.find(u=>u.id===uid);role='eval';}
+  else if(type==='p'){user=(DB.aprobadores||[]).find(u=>u.id===uid);role='aprobador';}
   else{user=DB.clubs.find(u=>u.id===uid);role='club';}
   if(!user){err.style.display='block';err.textContent='Usuario no encontrado.';return;}
   if(user.pass!==pass){err.style.display='block';err.textContent='Contraseña incorrecta.';return;}
@@ -732,6 +804,7 @@ function doLogin(){
   startRealtimeSync();
   if(role==='admin'){renderAdmin();showScreen('sc-admin');}
   else if(role==='eval'){renderEval();showScreen('sc-eval');}
+  else if(role==='aprobador'){renderAprobador();showScreen('sc-aprobador');}
   else{renderClub();showScreen('sc-club');}
 }
 
@@ -747,7 +820,7 @@ function logout(){
 function closeModal(id){document.getElementById(id).classList.remove('open');ST.editIdx=null;ST.editUserIdx=null;}
 
 function admTab(t){
-  ['ranking','eventos','estrellas','evaluar','detalle','historial','gestion'].forEach(x=>{
+  ['aprobacion','ranking','eventos','estrellas','evaluar','detalle','historial','gestion'].forEach(x=>{
     document.getElementById('ap-'+x).style.display=x===t?'block':'none';
     document.getElementById('atab-'+x).classList.toggle('active',x===t);
   });
@@ -756,10 +829,11 @@ function admTab(t){
   if(t==='estrellas')renderEstrellasGrupos();
   if(t==='eventos')renderAcordeon();
   if(t==='gestion')gestTab('clubes');
+  if(t==='aprobacion')renderAprobacionAdmin();
 }
 
 function gestTab(t){
-  ['clubes','evaluadores','admins','eventos','divisiones','disciplina','historial','credenciales','nuevo'].forEach(x=>{
+  ['clubes','evaluadores','admins','eventos','divisiones','disciplina','aprobadores','certificado','historial','credenciales','nuevo'].forEach(x=>{
     document.getElementById('gp-'+x).style.display=x===t?'block':'none';
     document.getElementById('gtab-'+x).classList.toggle('active',x===t);
   });
@@ -769,6 +843,8 @@ function gestTab(t){
   if(t==='eventos')renderGestionEventos();
   if(t==='divisiones')renderGestionDivisiones();
   if(t==='disciplina')renderGestionDisciplina();
+  if(t==='aprobadores')renderGestionAprobadores();
+  if(t==='certificado')renderGestionCertificado();
   if(t==='historial')renderGestionHistorial();
   if(t==='credenciales')renderGestionCreds();
 }
@@ -783,8 +859,10 @@ async function confirmarNuevoCampamento(){
   EVENTS.splice(0,EVENTS.length);
   ST.scores=[];
   ST.faltas=[];
+  ST.pendientes=[];
   await saveScoresToFirebase();
   await saveFaltasToFirebase();
+  await savePendientesToFirebase();
   await saveDBToFirebase();
   updateCampName();
   msg.className='notif';msg.style.display='block';
@@ -864,10 +942,11 @@ function renderAcordeon(){
       </button>
       <div class="acord-event-body" id="eb-${div}-${ev.id}">${clubRows}</div>`;
     });
+    const dc=getDivColor(div);
     el.innerHTML+=`<div class="acord-section">
-      <button class="acord-section-btn" onclick="toggleSection(${div})">
-        <div><p class="acord-section-title">${DIVNAMES[div]}</p><p class="acord-section-meta">${evaluatedEv} de ${evtsDiv.length} eventos con puntajes</p></div>
-        <span class="acord-chevron" id="schev-${div}">▶</span>
+      <button class="acord-section-btn" style="background:${dc.bg}" onclick="toggleSection(${div})">
+        <div><p class="acord-section-title" style="color:${dc.text}">${DIVNAMES[div]}</p><p class="acord-section-meta" style="color:${dc.text}">${evaluatedEv} de ${evtsDiv.length} eventos con puntajes</p></div>
+        <span class="acord-chevron" id="schev-${div}" style="color:${dc.text}">▶</span>
       </button>
       <div class="acord-section-body" id="sb-${div}"><div style="padding:4px 0">${evBtns}</div></div>
     </div>`;
@@ -1383,6 +1462,9 @@ async function eliminarUsuario(tipo, id, nombre){
   } else if(tipo==='eval'){
     DB.evaluadores=DB.evaluadores.filter(e=>e.id!==id);
     renderGestionEvaluadores();
+  } else if(tipo==='aprobador'){
+    DB.aprobadores=(DB.aprobadores||[]).filter(a=>a.id!==id);
+    renderGestionAprobadores();
   } else if(tipo==='admin'){
     if(DB.admins.length<=1){alert('Debe haber al menos un administrador.');return;}
     DB.admins=DB.admins.filter(a=>a.id!==id);
@@ -1399,12 +1481,11 @@ function openUserModal(type,mode,id){
   if(mode==='edit'){
     if(type==='club')user=DB.clubs.find(c=>c.id===id);
     else if(type==='eval')user=DB.evaluadores.find(e=>e.id===id);
+    else if(type==='aprobador')user=(DB.aprobadores||[]).find(a=>a.id===id);
     else user=DB.admins.find(a=>a.id===id);
   }
-  title.textContent=mode==='new'?`Agregar ${type==='club'?'club':type==='eval'?'evaluador':'administrador'}`:`Editar ${type==='club'?'club':type==='eval'?'evaluador':'administrador'}`;
+  title.textContent=mode==='new'?`Agregar ${type==='club'?'club':type==='eval'?'evaluador':type==='aprobador'?'aprobador':'administrador'}`:`Editar ${type==='club'?'club':type==='eval'?'evaluador':type==='aprobador'?'aprobador':'administrador'}`;
   if(type==='club'){
-    body.innerHTML=`
-      <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre del club</label>
       <input id="mu-name" placeholder="ej. Guerreros" value="${user?user.name:''}"></div>
       <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Categoría</label>
       <select id="mu-cat"><option value="kids" ${user&&user.cat==='kids'?'selected':''}>Kids</option><option value="junior" ${user&&user.cat==='junior'?'selected':''}>Junior</option><option value="senior" ${user&&user.cat==='senior'?'selected':''}>Senior</option></select></div>
@@ -1419,6 +1500,12 @@ function openUserModal(type,mode,id){
       <input id="mu-pass" placeholder="ej. eval#5678" value="${user?user.pass:''}"></div>
       <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:6px">Eventos asignados</label>
       <div class="checkbox-group" id="mu-events">${checkboxes}</div></div>`;
+  } else if(type==='aprobador'){
+    body.innerHTML=`
+      <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre</label>
+      <input id="mu-name" placeholder="ej. Pedro Ramírez" value="${user?user.name:''}"></div>
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Contraseña</label>
+      <input id="mu-pass" placeholder="ej. apr#1234" value="${user?user.pass:''}"></div>`;
   } else {
     body.innerHTML=`
       <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre</label>
@@ -1433,6 +1520,18 @@ function openUserModal(type,mode,id){
 async function saveUser(){
   const type=ST.editUserType;
   const err=document.getElementById('modal-user-err');
+
+  if(type==='aprobador'){
+    const name=document.getElementById('mu-name').value.trim();
+    const pass=document.getElementById('mu-pass').value.trim();
+    if(!name||!pass){err.style.display='block';err.textContent='Nombre y contraseña son obligatorios.';return;}
+    if(!DB.aprobadores)DB.aprobadores=[];
+    if(id){const a=DB.aprobadores.find(x=>x.id===id);a.name=name;a.pass=pass;}
+    else{DB.aprobadores.push({id:DB.nextId++,name,pass});}
+    await saveDBToFirebase();closeModal('modal-user');
+    renderGestionAprobadores();
+    return;
+  }
 
   if(type==='division'){
     const nombre=document.getElementById('mu-div-nombre').value.trim();
@@ -1628,9 +1727,10 @@ async function evSubmit(){
   const msg=document.getElementById('ev-msg');const ev=EVENTS.find(x=>x.id===eid);
   if(!cid||!eid||isNaN(sc)){msg.className='err';msg.style.display='block';msg.textContent='Completa todos los campos.';return;}
   if(ev&&sc>ev.max){msg.className='err';msg.style.display='block';msg.textContent=`Máximo: ${ev.max} pts.`;return;}
-  ST.scores.push({clubId:cid,eventId:eid,score:sc,note,evalId:ST.current.id,ts:Date.now()});
-  await saveScoresToFirebase();
-  msg.className='notif';msg.style.display='block';msg.textContent='✓ Puntaje registrado.';
+  const pendiente={id:Date.now(),clubId:cid,eventId:eid,score:sc,note,evalId:ST.current.id,ts:Date.now(),estado:'pendiente'};
+  ST.pendientes.push(pendiente);
+  await savePendientesToFirebase();
+  msg.className='notif';msg.style.display='block';msg.textContent='✓ Puntaje enviado — pendiente de aprobación.';
   document.getElementById('ev-score').value='';document.getElementById('ev-note').value='';document.getElementById('ev-prog').style.width='0%';
   setTimeout(()=>msg.style.display='none',3000);
 }
@@ -1696,11 +1796,14 @@ function renderClub(){
           ${ptsToNext>0?`<p style="font-size:12px;color:#999;margin-top:4px">Necesitas <strong>${ptsToNext} pts</strong> más para ${star.n+1} estrellas</p>`:`<p style="font-size:12px;color:#1D9E75;font-weight:700;margin-top:4px">¡Nivel máximo alcanzado!</p>`}
         </div>
       </div>
-      <div class="progress-bar" style="margin-top:12px;height:10px"><div class="progress-fill" style="width:${pct}%;background:${star.color}"></div></div>
+      <div class="progress-bar" style="margin-top:12px;height:10px"><div class="progress-fill" style="width:${pct}%;background:${star.barColor||star.color}"></div></div>
       <div style="display:flex;justify-content:space-between;font-size:10px;color:#bbb;margin-top:4px">
         <span>0%</span><span>49%★★★</span><span>63%★★★★</span><span>77%★★★★★</span><span>91%★×6</span><span>100%</span>
       </div>
       ${histHtml}
+      <div style="margin-top:10px;text-align:right">
+        <button class="btn btn-sm btn-pdf" onclick="descargarHistorialPDF()">⬇️ Descargar historial PDF</button>
+      </div>
     </div>`;
   document.getElementById('club-metrics').innerHTML=`
     <div class="metric"><div class="metric-val">${ST.scores.filter(s=>s.clubId===club.id).length}</div><div class="metric-lbl">Eventos evaluados</div></div>
@@ -1745,12 +1848,13 @@ function renderClub(){
     const secTotal=evts.reduce((a,e)=>{const sc=ST.scores.find(s=>s.clubId===club.id&&s.eventId===e.id);return a+(sc?sc.score:0);},0);
     const secMax=evts.reduce((a,e)=>a+e.max,0);
     const evaluated=evts.filter(e=>ST.scores.find(s=>s.clubId===club.id&&s.eventId===e.id)).length;
-    elSec.innerHTML+=`<div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
-        <p style="font-size:13px;font-weight:700">${DIVNAMES[div]}</p>
-        <div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:#666">${evaluated}/${evts.length} evaluados</span>${scoreBadge(secTotal,secMax)}</div>
+    const dc=getDivColor(div);
+    elSec.innerHTML+=`<div class="card" style="border-color:${dc.border};margin-bottom:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;padding:8px 10px;background:${dc.bg};border-radius:8px;margin:-4px -4px 10px -4px">
+        <p style="font-size:13px;font-weight:700;color:${dc.text}">${DIVNAMES[div]||'División '+div}</p>
+        <div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:${dc.text}">${evaluated}/${evts.length} evaluados</span>${scoreBadge(secTotal,secMax)}</div>
       </div>
-      <div class="progress-bar" style="margin-bottom:12px"><div class="progress-fill" style="width:${Math.round(secTotal/secMax*100)}%"></div></div>
+      <div class="progress-bar" style="margin-bottom:12px"><div style="height:100%;border-radius:4px;background:${dc.bar};width:${Math.round(secTotal/secMax*100)}%;transition:width 0.4s"></div></div>
       ${evts.map(ev=>{
         const sc=ST.scores.find(s=>s.clubId===club.id&&s.eventId===ev.id);
         return`<div class="event-row ${sc?'evaluated':'pending'}">
@@ -1806,6 +1910,372 @@ function descargarCredsPDF(){
     doc.text('Puntajes ACO — Confidencial',14,290);doc.text('Pág. '+i+'/'+pages,196,290,{align:'right'});
   }
   doc.save('Credenciales_'+( DB.campName||'Campamento').replace(/[^a-zA-Z0-9]/g,'_')+'.pdf');
+}
+
+function renderAprobacionAdmin(){
+  const el=document.getElementById('aprobacion-view');
+  const pend=ST.pendientes||[];
+  const pendientes=pend.filter(p=>p.estado==='pendiente');
+  const aprobados=pend.filter(p=>p.estado==='aprobado');
+  const rechazados=pend.filter(p=>p.estado==='rechazado');
+  let html=`<div class="card">
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+      <div class="metric" style="flex:1"><div class="metric-val" style="color:#E65100">${pendientes.length}</div><div class="metric-lbl">Pendientes</div></div>
+      <div class="metric" style="flex:1"><div class="metric-val" style="color:#1D9E75">${aprobados.length}</div><div class="metric-lbl">Aprobados</div></div>
+      <div class="metric" style="flex:1"><div class="metric-val" style="color:#E24B4A">${rechazados.length}</div><div class="metric-lbl">Rechazados</div></div>
+    </div>`;
+  if(!pendientes.length){html+=`<p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin puntajes pendientes de aprobación.</p>`;}
+  else{
+    html+=`<h3 style="font-size:13px;font-weight:700;color:#E65100;margin-bottom:10px">⏳ Pendientes de aprobación</h3>`;
+    pendientes.forEach(p=>{
+      const club=DB.clubs.find(c=>c.id===p.clubId);const ev=EVENTS.find(e=>e.id===p.eventId);
+      const eval_=DB.evaluadores.find(e=>e.id===p.evalId);
+      const fecha=new Date(p.ts).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const idx=ST.pendientes.indexOf(p);
+      html+=`<div style="padding:10px;border:1px solid #FAC775;border-radius:8px;margin-bottom:8px;background:#FFFDE7">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div><p style="font-size:13px;font-weight:700">${club?club.name:'?'} — ${ev?ev.name:'?'}</p>
+          <p style="font-size:12px;color:#666">${p.note||'Sin observación'} · ${eval_?eval_.name:'?'} · ${fecha}</p></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            ${scoreBadge(p.score,ev?ev.max:100)}
+            <button class="btn btn-sm btn-primary" onclick="aprobarPuntaje(${idx})">✅ Aprobar</button>
+            <button class="btn btn-sm" style="background:#FCEBEB;color:#791F1F;border-color:#F7C1C1" onclick="rechazarPuntajeAdmin(${idx})">❌ Rechazar</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+  html+='</div>';
+  if(rechazados.length){
+    html+=`<div class="card"><h3 style="font-size:13px;font-weight:700;color:#E24B4A;margin-bottom:10px">❌ Rechazados</h3>`;
+    rechazados.forEach(p=>{
+      const club=DB.clubs.find(c=>c.id===p.clubId);const ev=EVENTS.find(e=>e.id===p.eventId);
+      html+=`<div style="padding:8px 0;border-bottom:1px solid #f0f0ea">
+        <p style="font-size:13px;font-weight:600">${club?club.name:'?'} — ${ev?ev.name:'?'}</p>
+        <p style="font-size:12px;color:#666">${p.motivoRechazo||'Sin motivo'}</p>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+async function aprobarPuntaje(idx){
+  const p=ST.pendientes[idx];
+  if(!p)return;
+  ST.pendientes[idx].estado='aprobado';
+  ST.pendientes[idx].aprobadoAt=Date.now();
+  ST.pendientes[idx].aprobadoPor=ST.current.name;
+  ST.scores.push({clubId:p.clubId,eventId:p.eventId,score:p.score,note:p.note,evalId:p.evalId,ts:p.ts,aprobadoAt:Date.now()});
+  await saveScoresToFirebase();
+  await savePendientesToFirebase();
+  renderAprobacionAdmin();
+}
+
+async function rechazarPuntajeAdmin(idx){
+  const motivo=prompt('Motivo del rechazo (obligatorio):');
+  if(!motivo)return;
+  ST.pendientes[idx].estado='rechazado';
+  ST.pendientes[idx].motivoRechazo=motivo;
+  ST.pendientes[idx].rechazadoAt=Date.now();
+  ST.pendientes[idx].rechazadoPor=ST.current.name;
+  await savePendientesToFirebase();
+  renderAprobacionAdmin();
+}
+
+function renderAprobador(){
+  document.getElementById('aprobador-name').textContent=ST.current.name;
+  document.getElementById('aprobador-campname').textContent=DB.campName||'Control de Puntaje';
+  aprobadorTab('pendientes');
+}
+
+function aprobadorTab(t){
+  ['pendientes','aprobados','rechazados'].forEach(x=>{
+    document.getElementById('apr-'+x).style.display=x===t?'block':'none';
+    document.getElementById('aptab-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='pendientes')renderAprobadorPendientes();
+  if(t==='aprobados')renderAprobadorAprobados();
+  if(t==='rechazados')renderAprobadorRechazados();
+}
+
+function renderAprobadorPendientes(){
+  const el=document.getElementById('apr-pendientes-list');
+  const pendientes=(ST.pendientes||[]).filter(p=>p.estado==='pendiente');
+  if(!pendientes.length){el.innerHTML='<div class="card"><p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin puntajes pendientes. ¡Todo al día!</p></div>';return;}
+  let html='';
+  pendientes.forEach(p=>{
+    const club=DB.clubs.find(c=>c.id===p.clubId);const ev=EVENTS.find(e=>e.id===p.eventId);
+    const eval_=DB.evaluadores.find(e=>e.id===p.evalId);
+    const fecha=new Date(p.ts).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    const idx=ST.pendientes.indexOf(p);
+    html+=`<div class="card" style="border-color:#FAC775">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div style="flex:1">
+          <p style="font-size:14px;font-weight:700">${club?club.name:'?'}</p>
+          <p style="font-size:13px;color:#1D9E75;font-weight:600">${ev?ev.name:'?'}</p>
+          <p style="font-size:12px;color:#666;margin-top:4px">${p.note||'Sin observación'}</p>
+          <p style="font-size:11px;color:#999;margin-top:3px">Evaluador: ${eval_?eval_.name:'?'} · ${fecha}</p>
+        </div>
+        <div style="text-align:right">
+          ${scoreBadge(p.score,ev?ev.max:100)}
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-sm btn-primary" onclick="aprobarPuntajeAprobador(${idx})">✅ Aprobar</button>
+            <button class="btn btn-sm" style="background:#FCEBEB;color:#791F1F;border-color:#F7C1C1" onclick="rechazarPuntajeAprobador(${idx})">❌ Rechazar</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderAprobadorAprobados(){
+  const el=document.getElementById('apr-aprobados-list');
+  const aprobados=(ST.pendientes||[]).filter(p=>p.estado==='aprobado');
+  if(!aprobados.length){el.innerHTML='<div class="card"><p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin puntajes aprobados aún.</p></div>';return;}
+  let html='<div class="card"><h3 style="font-size:13px;font-weight:700;margin-bottom:12px">✅ Puntajes aprobados</h3>';
+  aprobados.sort((a,b)=>b.aprobadoAt-a.aprobadoAt).forEach(p=>{
+    const club=DB.clubs.find(c=>c.id===p.clubId);const ev=EVENTS.find(e=>e.id===p.eventId);
+    html+=`<div style="padding:8px 0;border-bottom:1px solid #f0f0ea">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><p style="font-size:13px;font-weight:600">${club?club.name:'?'} — ${ev?ev.name:'?'}</p>
+        <p style="font-size:11px;color:#666">Aprobado por ${p.aprobadoPor||'?'}</p></div>
+        ${scoreBadge(p.score,ev?ev.max:100)}
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html+'</div>';
+}
+
+function renderAprobadorRechazados(){
+  const el=document.getElementById('apr-rechazados-list');
+  const rechazados=(ST.pendientes||[]).filter(p=>p.estado==='rechazado');
+  if(!rechazados.length){el.innerHTML='<div class="card"><p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin puntajes rechazados.</p></div>';return;}
+  let html='<div class="card"><h3 style="font-size:13px;font-weight:700;margin-bottom:12px">❌ Puntajes rechazados</h3>';
+  rechazados.forEach(p=>{
+    const club=DB.clubs.find(c=>c.id===p.clubId);const ev=EVENTS.find(e=>e.id===p.eventId);
+    html+=`<div style="padding:8px 0;border-bottom:1px solid #f0f0ea">
+      <p style="font-size:13px;font-weight:600">${club?club.name:'?'} — ${ev?ev.name:'?'}</p>
+      <p style="font-size:12px;color:#E24B4A">${p.motivoRechazo||'Sin motivo'}</p>
+      <p style="font-size:11px;color:#999">Rechazado por ${p.rechazadoPor||'?'}</p>
+    </div>`;
+  });
+  el.innerHTML=html+'</div>';
+}
+
+async function aprobarPuntajeAprobador(idx){
+  const p=ST.pendientes[idx];if(!p)return;
+  ST.pendientes[idx].estado='aprobado';
+  ST.pendientes[idx].aprobadoAt=Date.now();
+  ST.pendientes[idx].aprobadoPor=ST.current.name;
+  ST.scores.push({clubId:p.clubId,eventId:p.eventId,score:p.score,note:p.note,evalId:p.evalId,ts:p.ts});
+  await saveScoresToFirebase();
+  await savePendientesToFirebase();
+  aprobadorTab('pendientes');
+}
+
+async function rechazarPuntajeAprobador(idx){
+  const motivo=prompt('Motivo del rechazo (obligatorio):');
+  if(!motivo)return;
+  ST.pendientes[idx].estado='rechazado';
+  ST.pendientes[idx].motivoRechazo=motivo;
+  ST.pendientes[idx].rechazadoAt=Date.now();
+  ST.pendientes[idx].rechazadoPor=ST.current.name;
+  await savePendientesToFirebase();
+  aprobadorTab('pendientes');
+}
+
+function renderGestionAprobadores(){
+  const el=document.getElementById('gestion-aprobadores');
+  const aprobadores=DB.aprobadores||[];
+  let html=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:14px;font-weight:700">Aprobadores (${aprobadores.length})</h3>
+      <button class="btn btn-primary btn-sm" onclick="openUserModal('aprobador','new')">+ Agregar aprobador</button>
+    </div>
+    <p style="font-size:12px;color:#666;margin-bottom:14px">Los aprobadores verifican que los puntajes coincidan con las planillas físicas antes de que aparezcan en el perfil del club.</p>`;
+  if(!aprobadores.length){html+=`<p style="font-size:13px;color:#999;text-align:center;padding:1rem">Sin aprobadores registrados.</p>`;}
+  aprobadores.forEach(a=>{
+    html+=`<div class="user-item">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div class="avatar" style="background:#E8F5E9;color:#1B5E20;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${initials(a.name)}</div>
+        <div><p style="font-size:13px;font-weight:600">${a.name}</p>
+        <p style="font-size:11px;color:#666">Clave: <code style="background:#f5f5f0;padding:2px 6px;border-radius:4px">${a.pass}</code></p></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-edit btn-sm" onclick="openUserModal('aprobador','edit',${a.id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarUsuario('aprobador',${a.id},'${a.name}')">🗑️</button>
+      </div>
+    </div>`;
+  });
+  html+='</div>';el.innerHTML=html;
+}
+
+function renderGestionCertificado(){
+  const el=document.getElementById('gestion-certificado');
+  const cert=DB.certificado||{};
+  el.innerHTML=`<div class="card">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">🏅 Configuración del Certificado</h3>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Logo del evento</label>
+      <input type="file" id="cert-logo" accept="image/*" onchange="previewCertLogo(this)" style="font-size:12px">
+      ${cert.logoBase64?`<div style="margin-top:8px"><img src="${cert.logoBase64}" style="height:60px;border-radius:8px;border:1px solid #e5e5e0"></div>`:''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" class="grid2">
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Fecha del evento</label>
+      <input id="cert-fecha" placeholder="ej. 15 al 18 de Mayo de 2026" value="${cert.fecha||''}"></div>
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Lugar</label>
+      <input id="cert-lugar" placeholder="ej. Finca El Paraíso, Medellín" value="${cert.lugar||''}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px" class="grid2">
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre del firmante</label>
+      <input id="cert-firmante" placeholder="ej. Pr. Jorge García" value="${cert.firmante||'Pr. Jorge García'}"></div>
+      <div><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Cargo del firmante</label>
+      <input id="cert-cargo" placeholder="ej. Director Ministerio Juvenil" value="${cert.cargo||'Director Ministerio Juvenil'}"></div>
+    </div>
+    <div id="cert-msg" style="display:none"></div>
+    <button class="btn btn-primary btn-sm" onclick="guardarCertificado()">Guardar configuración</button>
+  </div>
+  <div class="card">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Vista previa del certificado</h3>
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Así se verá el certificado de cada club.</p>
+    <button class="btn btn-pdf btn-sm" onclick="descargarCertificadoClub(${DB.clubs[0]?DB.clubs[0].id:0})">Vista previa ${DB.clubs[0]?'— '+DB.clubs[0].name:''}</button>
+  </div>`;
+}
+
+function previewCertLogo(input){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    DB.certificado=DB.certificado||{};
+    DB.certificado.logoBase64=e.target.result;
+    renderGestionCertificado();
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+async function guardarCertificado(){
+  DB.certificado=DB.certificado||{};
+  DB.certificado.fecha=document.getElementById('cert-fecha').value.trim();
+  DB.certificado.lugar=document.getElementById('cert-lugar').value.trim();
+  DB.certificado.firmante=document.getElementById('cert-firmante').value.trim();
+  DB.certificado.cargo=document.getElementById('cert-cargo').value.trim();
+  await saveDBToFirebase();
+  const msg=document.getElementById('cert-msg');
+  msg.className='notif';msg.style.display='block';msg.textContent='✓ Configuración guardada.';
+  setTimeout(()=>msg.style.display='none',2500);
+}
+
+function descargarCertificado(){
+  descargarCertificadoClub(ST.current.clubId);
+}
+
+function descargarCertificadoClub(clubId){
+  const{jsPDF}=window.jspdf;
+  const club=DB.clubs.find(c=>c.id===clubId);
+  if(!club){alert('Club no encontrado.');return;}
+  const cert=DB.certificado||{};
+  const total=clubTotalConDisciplina(clubId);
+  const pct=Math.round(total/getMaxPts()*100);
+  const star=getStarInfo(pct);
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const W=297;const H=210;
+
+  doc.setFillColor(248,248,245);doc.rect(0,0,W,H,'F');
+  doc.setDrawColor(29,158,117);doc.setLineWidth(3);doc.rect(8,8,W-16,H-16,'S');
+  doc.setDrawColor(200,200,180);doc.setLineWidth(0.5);doc.rect(12,12,W-24,H-24,'S');
+
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(29,158,117);
+  doc.text('MINISTERIO JUVENIL — ASOCIACIÓN CENTRO OCCIDENTAL',W/2,28,{align:'center'});
+
+  if(cert.logoBase64){try{doc.addImage(cert.logoBase64,'PNG',W/2-15,32,30,30);}catch(e){}}
+
+  doc.setFont('helvetica','bold');doc.setFontSize(28);doc.setTextColor(40,40,40);
+  doc.text('CERTIFICADO DE PARTICIPACIÓN',W/2,75,{align:'center'});
+
+  doc.setFont('helvetica','normal');doc.setFontSize(13);doc.setTextColor(80,80,80);
+  doc.text('Se certifica que el Club',W/2,90,{align:'center'});
+
+  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(29,158,117);
+  doc.text(club.name,W/2,103,{align:'center'});
+
+  doc.setFont('helvetica','normal');doc.setFontSize(13);doc.setTextColor(80,80,80);
+  doc.text('participó en el',W/2,115,{align:'center'});
+
+  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(40,40,40);
+  doc.text(DB.campName||'Camporee',W/2,126,{align:'center'});
+
+  doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(80,80,80);
+  const lugar=cert.lugar?`realizado en ${cert.lugar}`:'';
+  const fecha=cert.fecha?`del ${cert.fecha}`:'';
+  if(lugar||fecha)doc.text([lugar,fecha].filter(Boolean).join(', '),W/2,136,{align:'center'});
+
+  doc.setFont('helvetica','bold');doc.setFontSize(18);doc.setTextColor(star.color);
+  doc.text(`Obteniendo: ${star.label} ${star.stars}`,W/2,150,{align:'center'});
+
+  doc.setDrawColor(29,158,117);doc.setLineWidth(0.5);
+  doc.line(W/2-50,170,W/2+50,170);
+  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(40,40,40);
+  doc.text(cert.firmante||'Pr. Jorge García',W/2,176,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(100,100,100);
+  doc.text(cert.cargo||'Director Ministerio Juvenil',W/2,182,{align:'center'});
+
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);
+  doc.text('Puntajes ACO — Ministerio Juvenil Asocentro',W/2,200,{align:'center'});
+
+  doc.save(`Certificado_${club.name.replace(/\s+/g,'_')}.pdf`);
+}
+
+function descargarHistorialPDF(){
+  const{jsPDF}=window.jspdf;
+  const club=DB.clubs.find(c=>c.id===ST.current.clubId);
+  if(!club)return;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210;let y=20;
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(29,158,117);
+  doc.text('HISTORIAL DE ESTRELLAS',W/2,y,{align:'center'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(40,40,40);
+  doc.text(club.name,W/2,y,{align:'center'});y+=5;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('Ministerio Juvenil — Asociación Centro Occidental',W/2,y,{align:'center'});y+=5;
+  doc.setDrawColor(29,158,117);doc.line(14,y,196,y);y+=8;
+
+  const hist=club.historial||{};
+  const total=clubTotalConDisciplina(club.id);
+  const pct=Math.round(total/getMaxPts()*100);
+  const star=getStarInfo(pct);
+
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(29,158,117);
+  doc.text('Campamento actual: '+( DB.campName||''),14,y);y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(40,40,40);
+  doc.text(`${total} pts · ${pct}% · ${star.label}`,14,y);y+=5;
+  doc.text(star.stars,14,y);y+=10;
+
+  const years=Object.keys(hist).sort().reverse();
+  if(years.length){
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(29,158,117);
+    doc.text('Historial de años anteriores',14,y);y+=7;
+    doc.setDrawColor(220,220,220);doc.line(14,y,196,y);y+=5;
+    years.forEach(yr=>{
+      const s=hist[yr];
+      doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(40,40,40);
+      doc.text(`${yr}:`,14,y);
+      doc.text('★'.repeat(s)+` (${s} estrella${s>1?'s':''})`,40,y);
+      const diff=s<star.n?'↑ Mejoraste':s>star.n?'↓ A superarlo':'= Igual';
+      doc.setTextColor(s<star.n?29:s>star.n?226:100,s<star.n?158:s>star.n?75:100,s<star.n?117:s>star.n?75:100);
+      doc.text(diff,160,y);
+      doc.setTextColor(40,40,40);
+      y+=7;
+    });
+  }else{
+    doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(150,150,150);
+    doc.text('Sin historial de años anteriores registrado.',14,y);y+=7;
+  }
+
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);
+  doc.text('Puntajes ACO — Ministerio Juvenil Asocentro',14,290);
+  doc.save(`Historial_${club.name.replace(/\s+/g,'_')}.pdf`);
 }
 
 function generarPDF(){
@@ -1865,6 +2335,8 @@ window.addEventListener('firebase-ready', async()=>{
     if(scSnap.exists())ST.scores=scSnap.data().data||[];
     const fSnap=await getDoc(doc(db,'camporee','faltas'));
     if(fSnap.exists())ST.faltas=fSnap.data().data||[];
+    const pSnap=await getDoc(doc(db,'camporee','pendientes'));
+    if(pSnap.exists())ST.pendientes=pSnap.data().data||[];
   }catch(e){console.log('Usando datos locales');}
   updateCampName();
   showScreen('sc-login');
