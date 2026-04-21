@@ -1486,6 +1486,8 @@ function openUserModal(type,mode,id){
   }
   title.textContent=mode==='new'?`Agregar ${type==='club'?'club':type==='eval'?'evaluador':type==='aprobador'?'aprobador':'administrador'}`:`Editar ${type==='club'?'club':type==='eval'?'evaluador':type==='aprobador'?'aprobador':'administrador'}`;
   if(type==='club'){
+    body.innerHTML=`
+      <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Nombre del club</label>
       <input id="mu-name" placeholder="ej. Guerreros" value="${user?user.name:''}"></div>
       <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Categoría</label>
       <select id="mu-cat"><option value="kids" ${user&&user.cat==='kids'?'selected':''}>Kids</option><option value="junior" ${user&&user.cat==='junior'?'selected':''}>Junior</option><option value="senior" ${user&&user.cat==='senior'?'selected':''}>Senior</option></select></div>
