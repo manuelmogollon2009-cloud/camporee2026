@@ -1524,6 +1524,7 @@ async function saveUser(){
   const err=document.getElementById('modal-user-err');
 
   if(type==='aprobador'){
+    const id=ST.editUserIdx;
     const name=document.getElementById('mu-name').value.trim();
     const pass=document.getElementById('mu-pass').value.trim();
     if(!name||!pass){err.style.display='block';err.textContent='Nombre y contraseña son obligatorios.';return;}
