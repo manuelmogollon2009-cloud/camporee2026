@@ -2002,10 +2002,11 @@ function renderUniformesEval(){
     </div>
     <div style="margin-bottom:14px">
       <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Club a evaluar</label>
-      <select id="unif-club" onchange="renderPlanillaUniforme()" style="width:100%;padding:9px 11px;border:1px solid #d0d0c8;border-radius:8px;font-size:13px;font-family:inherit">
+      <select id="unif-club" oninput="renderPlanillaUniforme()" onchange="renderPlanillaUniforme()" style="width:100%;padding:9px 11px;border:1px solid #d0d0c8;border-radius:8px;font-size:13px;font-family:inherit">
         <option value="">Seleccionar club...</option>
         ${DB.clubs.map(c=>`<option value="${c.id}">${c.name} (${catName(c.cat)})</option>`).join('')}
       </select>
+      <button class="btn btn-primary btn-sm" style="margin-top:8px;width:100%" onclick="renderPlanillaUniforme()">Ver planilla</button>
     </div>
   </div>
   <div id="planilla-unif-container"></div>`;
