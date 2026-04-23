@@ -2057,7 +2057,7 @@ function renderPlanillaUniforme(){
           rowsHtml+=`<tr>
             <td style="padding:7px 12px;font-size:12px">${item.nombre}</td>
             <td style="padding:7px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-            <td style="padding:7px 12px;text-align:center"><input type="number" min="0" value="${fallas}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
+            <td style="padding:7px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
             <td style="padding:7px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
           </tr>`;
         });
@@ -2083,7 +2083,7 @@ function renderPlanillaUniforme(){
         secHtml+=`<tr>
           <td style="padding:8px 12px;font-size:12px">${item.nombre}</td>
           <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-          <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${fallas}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
+          <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
           <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
         </tr>`;
       });
@@ -2119,7 +2119,7 @@ function renderPlanillaUniforme(){
     rowsExtra+=`<tr>
       <td style="padding:8px 12px;font-size:12px">${item.nombre}</td>
       <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-      <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${fallas}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'dx_${item.id}',this.value)"></td>
+      <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'dx_${item.id}',this.value)"></td>
       <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
     </tr>`;
   });
