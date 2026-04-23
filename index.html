@@ -1955,9 +1955,10 @@ const UNIF_DIRECTIVA_EXTRA=[
 ];
 
 function getMaxUniforme(tipo){
-  const base=UNIF_SECCIONES.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i.val,0),0);
-  if(tipo==='directiva')return base+UNIF_DIRECTIVA_EXTRA.reduce((a,i)=>a+i.val,0);
-  return base;
+  const miembrosMax=UNIF_SECCIONES.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i.val,0),0);
+  const directivaMax=UNIF_DIRECTIVA_EXTRA.reduce((a,i)=>a+i.val,0);
+  if(tipo==='directiva')return directivaMax;
+  return miembrosMax;
 }
 
 function calcItemTotal(val,miembros,fallas){
