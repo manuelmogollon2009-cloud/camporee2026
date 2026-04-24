@@ -636,8 +636,7 @@ function posCardColor(n){
 function scoreBadge(s,m){const p=s/m;const c=p>=0.9?'s-gold':p>=0.7?'s-silver':p>=0.5?'s-bronze':'s-low';return`<span class="score-badge ${c}">${s}/${m}</span>`;}
 function clubTotal(cid){return ST.scores.filter(s=>s.clubId===cid).reduce((a,b)=>a+b.score,0);}
 function clubTotalConDisciplina(cid){
-  const unifScore=ST.scores.find(s=>s.clubId===cid&&s.eventId==='uniforme');
-  return clubTotal(cid)+getDisciplinaTotal(cid)+(unifScore?unifScore.score:0);
+  return clubTotal(cid)+getDisciplinaTotal(cid);
 }
 
 function getMaxPtsClub(cid){
