@@ -547,36 +547,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <script>
-let EVENTS=[
-  {id:1,div:1,name:'Inscripción a tiempo',max:150,evalIds:[101]},
-  {id:2,div:1,name:'Carpeta de registro',max:50,evalIds:[101]},
-  {id:3,div:1,name:'Carpeta de documentos',max:300,evalIds:[101]},
-  {id:4,div:2,name:'Semana de evangelismo',max:200,evalIds:[102]},
-  {id:5,div:2,name:'Grupos pequeños',max:150,evalIds:[102]},
-  {id:6,div:2,name:'Impacto a la comunidad',max:150,evalIds:[102]},
-  {id:7,div:2,name:'Participación en feria',max:300,evalIds:[102]},
-  {id:8,div:2,name:'Especialidades',max:300,evalIds:[102]},
-  {id:9,div:3,name:'Matutina',max:500,evalIds:[103]},
-  {id:10,div:3,name:'Conexión bíblica',max:500,evalIds:[104]},
-  {id:11,div:3,name:'Doctrina',max:500,evalIds:[105]},
-  {id:12,div:3,name:'Cazando la lectura',max:500,evalIds:[106]},
-  {id:13,div:4,name:'Balonmano',max:300,evalIds:[107]},
-  {id:14,div:4,name:'Prueba de desafíos',max:300,evalIds:[108]},
-  {id:15,div:4,name:'Carrera de relevo',max:300,evalIds:[110]},
-  {id:16,div:4,name:'Prueba de nudos',max:300,evalIds:[109]},
-  {id:17,div:5,name:'Marchas (Kids)',max:400,evalIds:[111],cat:'kids'},
-  {id:18,div:5,name:'Marchas (Junior)',max:400,evalIds:[112],cat:'junior'},
-  {id:19,div:5,name:'Marchas (Senior)',max:400,evalIds:[113],cat:'senior'},
-  {id:20,div:5,name:'Insp. uniforme (Kids)',max:900,evalIds:[114],cat:'kids'},
-  {id:21,div:5,name:'Insp. uniforme (Junior)',max:900,evalIds:[115],cat:'junior'},
-  {id:22,div:5,name:'Insp. uniforme (Senior)',max:900,evalIds:[116],cat:'senior'},
-  {id:23,div:5,name:'Insp. camping (Kids)',max:150,evalIds:[117],cat:'kids'},
-  {id:24,div:5,name:'Insp. camping (Junior)',max:150,evalIds:[118],cat:'junior'},
-  {id:25,div:5,name:'Insp. camping (Senior)',max:150,evalIds:[119],cat:'senior'},
-  {id:26,div:5,name:'Arte de acampar (Kids)',max:400,evalIds:[114],cat:'kids'},
-  {id:27,div:5,name:'Arte de acampar (Junior)',max:400,evalIds:[120],cat:'junior'},
-  {id:28,div:5,name:'Arte de acampar (Senior)',max:400,evalIds:[109],cat:'senior'},
-];
+let EVENTS=[];
 let DIVNAMES={1:'División 1 — Registro',2:'División 2 — Pre-Camporee',3:'División 3 — Bíblicos',4:'División 4 — Deportivos',5:'División 5 — Técnicos'};
 let DIVKEYS=[1,2,3,4,5];
 
@@ -594,55 +565,18 @@ function getMaxPts(){
 
 let ST={scores:[],faltas:[],pendientes:[],current:null,editIdx:null,editUserIdx:null,editUserType:null,unsubscribe:null};
 let DB={
-  clubs:[
-    {id:10,name:'Neolaia',cat:'kids',pass:'neo#4821',historial:{}},
-    {id:11,name:'Centinela',cat:'kids',pass:'cen#7053',historial:{}},
-    {id:12,name:'Fuerza de Dios',cat:'kids',pass:'fue#2694',historial:{}},
-    {id:13,name:'Valdenses',cat:'junior',pass:'val#3817',historial:{}},
-    {id:14,name:'Admiel',cat:'junior',pass:'adm#5062',historial:{}},
-    {id:15,name:'Josué',cat:'junior',pass:'jos#9143',historial:{}},
-    {id:16,name:'Gedeón',cat:'senior',pass:'ged#7730',historial:{}},
-    {id:17,name:'G-12',cat:'senior',pass:'g12#4455',historial:{}},
-    {id:18,name:'Luther Warren',cat:'senior',pass:'lut#8829',historial:{}},
-  ],
-  evaluadores:[
-    {id:101,name:'Hilda Cuadrados',pass:'hil#3847',evalIds:[1,2,3]},
-    {id:102,name:'Jorge García (Pre-C)',pass:'jgp#5291',evalIds:[4,5,6,7,8]},
-    {id:103,name:'Manuel Polo',pass:'mpo#7463',evalIds:[9]},
-    {id:104,name:'Eduardo Anaya',pass:'ean#2058',evalIds:[10]},
-    {id:105,name:'Walner Palacio',pass:'wal#6134',evalIds:[11]},
-    {id:106,name:'Javier Gaviria',pass:'jga#9027',evalIds:[12]},
-    {id:107,name:'Mario Montes',pass:'mom#4815',evalIds:[13]},
-    {id:108,name:'Ismael Hernández',pass:'ish#3362',evalIds:[14]},
-    {id:109,name:'Manuel Mogollón (Eval)',pass:'mme#7741',evalIds:[16,28]},
-    {id:110,name:'Juan Marmolejo',pass:'jmr#5509',evalIds:[15]},
-    {id:111,name:'Javier Gaviria (Kids)',pass:'jgk#8830',evalIds:[17]},
-    {id:112,name:'Erick Berrocal',pass:'erb#2247',evalIds:[18]},
-    {id:113,name:'Manuel Polo (Sr)',pass:'mps#6693',evalIds:[19]},
-    {id:114,name:'Richar Rincón',pass:'rri#4401',evalIds:[20,26]},
-    {id:115,name:'Eduardo Playonero',pass:'epl#7758',evalIds:[21]},
-    {id:116,name:'Isaí Bernal',pass:'isb#3325',evalIds:[22]},
-    {id:117,name:'Daniel Guiza',pass:'dgu#9914',evalIds:[23]},
-    {id:118,name:'Elber Márquez',pass:'elm#6672',evalIds:[24]},
-    {id:119,name:'Fredy Pinzón',pass:'fpi#1183',evalIds:[25]},
-    {id:120,name:'Mauro Usaquén',pass:'mus#5547',evalIds:[27]},
-  ],
+  clubs:[],
+  evaluadores:[],
   admins:[
     {id:1,name:'Jorge García',pass:'camporee2026jorge'},
     {id:2,name:'Manuel Mogollón',pass:'camporee2026manuel'},
   ],
   nextId:200,
-  nextEventId:29,
+  nextEventId:1,
   campName:'Camporee de Conquistadores "Valientes" 2026',
   disciplina:{puntosIniciales:1000,evalIds:[]},
-  divisiones:{
-    1:'División 1 — Registro',
-    2:'División 2 — Pre-Camporee',
-    3:'División 3 — Bíblicos',
-    4:'División 4 — Deportivos',
-    5:'División 5 — Técnicos'
-  },
-  nextDivId:6,
+  divisiones:{},
+  nextDivId:1,
   certificado:{logoBase64:'',fecha:'',lugar:'',firmante:'Pr. Jorge García',cargo:'Director Ministerio Juvenil'},
   aprobadores:[],
   verificadoresIds:[],
@@ -705,7 +639,10 @@ function posCardColor(n){
 }
 function scoreBadge(s,m){const p=s/m;const c=p>=0.9?'s-gold':p>=0.7?'s-silver':p>=0.5?'s-bronze':'s-low';return`<span class="score-badge ${c}">${s}/${m}</span>`;}
 function clubTotal(cid){return ST.scores.filter(s=>s.clubId===cid).reduce((a,b)=>a+b.score,0);}
-function clubTotalConDisciplina(cid){return clubTotal(cid)+getDisciplinaTotal(cid);}
+function clubTotalConDisciplina(cid){
+  const unifScore=ST.scores.find(s=>s.clubId===cid&&s.eventId==='uniforme');
+  return clubTotal(cid)+getDisciplinaTotal(cid)+(unifScore?unifScore.score:0);
+}
 function avCls(cat){return cat==='kids'?'av-k':cat==='junior'?'av-j':'av-s';}
 function catTag(cat){if(cat==='kids')return'<span class="tag tag-kids">Kids</span>';if(cat==='junior')return'<span class="tag tag-junior">Junior</span>';return'<span class="tag tag-senior">Senior</span>';}
 function catName(cat){return cat==='kids'?'Kids':cat==='junior'?'Junior':'Senior';}
@@ -1896,9 +1833,28 @@ function renderClub(){
       }).join('')}
     </div>`;
   });
-}
 
-// ===== DATOS DE UNIFORMES =====
+  // Sección de uniformes
+  const unifScore=ST.scores.find(s=>s.clubId===club.id&&s.eventId==='uniforme');
+  const unifMax=900;
+  elSec.innerHTML+=`<div class="card" style="border-color:#90CAF9;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;padding:8px 10px;background:#E3F2FD;border-radius:8px;margin:-4px -4px 10px -4px">
+      <p style="font-size:13px;font-weight:700;color:#0D47A1">👔 Inspección de Uniformes</p>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;color:#0D47A1">${unifScore?'✅ Evaluado':'Pendiente'}</span>
+        ${unifScore?scoreBadge(unifScore.score,unifMax):`<span style="font-size:11px;color:#bbb">0/${unifMax}</span>`}
+      </div>
+    </div>
+    <div class="progress-bar" style="margin-bottom:12px"><div style="height:100%;border-radius:4px;background:#42A5F5;width:${unifScore?Math.round(unifScore.score/unifMax*100):0}%;transition:width 0.4s"></div></div>
+    <div class="event-row ${unifScore?'evaluated':'pending'}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="event-dot ${unifScore?'dot-ok':'dot-pending'}"></div>
+        <p style="font-size:13px;font-weight:${unifScore?'600':'400'}">Puntaje de uniformes${unifScore?'':' — pendiente de evaluación'}</p>
+      </div>
+      ${unifScore?scoreBadge(unifScore.score,unifMax):`<span style="font-size:11px;color:#bbb">— / ${unifMax}</span>`}
+    </div>
+  </div>`;
+}
 const UNIF_SECCIONES=[
   {id:'gen',nombre:'Aspectos Generales (115 pts)',items:[
     {id:'g1',nombre:'Rostro limpio',val:15},
