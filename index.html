@@ -2019,7 +2019,7 @@ function renderPlanillaUniforme(){
           rowsHtml+=`<tr>
             <td style="padding:7px 12px;font-size:12px">${item.nombre}</td>
             <td style="padding:7px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-            <td style="padding:7px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
+            <td style="padding:7px 12px;text-align:center"><input type="number" min="0" value="${aciertos||''}" placeholder="" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
             <td style="padding:7px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
           </tr>`;
         });
@@ -2030,7 +2030,7 @@ function renderPlanillaUniforme(){
             <p style="font-size:12px;font-weight:700;color:#444">${ssTotal}/${ssMax} pts</p>
           </div>
           <table style="width:100%;font-size:12px;border-collapse:collapse">
-            <thead><tr style="background:#fafaf8"><th style="padding:5px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
+            <colgroup><col style="width:55%"><col style="width:15%"><col style="width:15%"><col style="width:15%"></colgroup><thead><tr style="background:#fafaf8"><th style="padding:5px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:5px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
             <tbody>${rowsHtml}</tbody>
           </table>
         </div>`;
@@ -2045,12 +2045,12 @@ function renderPlanillaUniforme(){
         secHtml+=`<tr>
           <td style="padding:8px 12px;font-size:12px">${item.nombre}</td>
           <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-          <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
+          <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos||''}" placeholder="" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'m_${item.id}',this.value)"></td>
           <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
         </tr>`;
       });
       secHtml=`<table style="width:100%;font-size:12px;border-collapse:collapse">
-        <thead><tr style="background:#f5f5f0"><th style="padding:6px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:15%"><col style="width:15%"></colgroup><thead><tr style="background:#f5f5f0"><th style="padding:6px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
         <tbody>${secHtml}</tbody>
       </table>`;
     }
@@ -2081,13 +2081,13 @@ function renderPlanillaUniforme(){
     rowsExtra+=`<tr>
       <td style="padding:8px 12px;font-size:12px">${item.nombre}</td>
       <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:600">${item.val}</td>
-      <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos}" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'dx_${item.id}',this.value)"></td>
+      <td style="padding:8px 12px;text-align:center"><input type="number" min="0" value="${aciertos||''}" placeholder="" style="width:60px;padding:4px 6px;border:1px solid #d0d0c8;border-radius:6px;text-align:center;font-size:12px" onchange="guardarFallas(${clubId},'dx_${item.id}',this.value)"></td>
       <td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:${total<item.val?'#E24B4A':'#1D9E75'}">${total}</td>
     </tr>`;
   });
   html+=`<div style="border-top:1px solid #FFCC80">
     <table style="width:100%;font-size:12px;border-collapse:collapse">
-      <thead><tr style="background:#f5f5f0"><th style="padding:6px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
+      <colgroup><col style="width:55%"><col style="width:15%"><col style="width:15%"><col style="width:15%"></colgroup><thead><tr style="background:#f5f5f0"><th style="padding:6px 12px;text-align:left;font-size:11px;color:#666">Ítem</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Valor</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Aciertos</th><th style="padding:6px 12px;text-align:center;font-size:11px;color:#666">Total</th></tr></thead>
       <tbody>${rowsExtra}</tbody>
     </table>
   </div>`;
@@ -2104,6 +2104,10 @@ function renderPlanillaUniforme(){
       <p style="font-size:20px;font-weight:800;color:#1D9E75">${totalGeneral} / ${maxGeneral} pts</p>
     </div>
     <div class="progress-bar" style="margin-top:8px;height:10px"><div style="height:100%;border-radius:4px;background:#1D9E75;width:${Math.round(totalGeneral/maxGeneral*100)}%"></div></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem">
+    <label style="font-size:13px;font-weight:700;color:#1a1a1a;display:block;margin-bottom:8px">📝 Observaciones generales</label>
+    <textarea id="unif-obs-${clubId}" placeholder="Anote aquí las observaciones generales de la inspección de uniforme..." rows="4" style="width:100%;padding:10px 12px;border:1px solid #d0d0c8;border-radius:8px;font-size:13px;resize:none;font-family:inherit" onchange="guardarFallas(${clubId},'obs_general',this.value)">${datos['obs_general']||''}</textarea>
   </div>
   <div style="text-align:center;margin-bottom:1rem">
     <button class="btn btn-primary" onclick="enviarUniformeParaAprobacion(${clubId},${totalGeneral},${maxGeneral})">✅ Enviar para aprobación</button>
@@ -2421,6 +2425,20 @@ function descargarPlanillaUniforme(){
 
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);
   doc.text('Puntajes ACO — Ministerio Juvenil Asocentro',14,290);
+
+  // Observaciones generales
+  if(datos['obs_general']){
+    if(y>265){doc.addPage();y=18;}
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(29,158,117);
+    doc.text('Observaciones generales:',14,y);y+=5;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(50,50,50);
+    const obsLines=doc.splitTextToSize(datos['obs_general'],170);
+    obsLines.forEach(line=>{
+      if(y>278){doc.addPage();y=18;}
+      doc.text(line,14,y);y+=5;
+    });
+  }
+
   doc.save(`Uniforme_${club.name.replace(/\s+/g,'_')}.pdf`);
 }
 
