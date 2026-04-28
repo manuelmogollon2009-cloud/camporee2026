@@ -478,6 +478,7 @@ tr:last-child td{border-bottom:none}
       <button class="tab-btn active" onclick="evalTab('registrar')" id="etab-registrar">Registrar</button>
       <button class="tab-btn" onclick="evalTab('disciplina')" id="etab-disciplina">🛡️ Disciplina</button>
       <button class="tab-btn" onclick="evalTab('uniformes')" id="etab-uniformes" style="display:none">👔 Uniformes</button>
+      <button class="tab-btn" onclick="evalTab('verificar')" id="etab-verificar" style="display:none">✅ Verificar</button>
       <button class="tab-btn" onclick="evalTab('misevals')" id="etab-misevals">Mis evaluaciones</button>
     </div>
     <div id="ep-registrar">
@@ -512,6 +513,9 @@ tr:last-child td{border-bottom:none}
     </div>
     <div id="ep-uniformes" style="display:none">
       <div id="ep-unif-content"></div>
+    </div>
+    <div id="ep-verificar" style="display:none">
+      <div id="ep-verif-content"></div>
     </div>
   </div>
 </div>
@@ -1556,7 +1560,7 @@ async function saveUser(){
 }
 
 function evalTab(t){
-  ['registrar','disciplina','uniformes','misevals'].forEach(x=>{
+  ['registrar','disciplina','uniformes','verificar','misevals'].forEach(x=>{
     const el=document.getElementById('ep-'+x);
     const btn=document.getElementById('etab-'+x);
     if(el)el.style.display=x===t?'block':'none';
@@ -1565,6 +1569,7 @@ function evalTab(t){
   if(t==='misevals')renderEvRecent();
   if(t==='disciplina')renderDiscEvaluador();
   if(t==='uniformes')renderUniformesEval();
+  if(t==='verificar')renderVerificarEval();
 }
 
 function renderDiscEvaluador(){
@@ -1661,6 +1666,10 @@ function renderEval(){
     });
     es.innerHTML+=`<option value="${e.id}">${e.name} (${e.max} pts)</option>`;
   });
+  // Mostrar pestaña verificar si tiene permiso
+  const esVerif=(DB.verificadoresIds||[]).includes(u.id);
+  const btnVerif=document.getElementById('etab-verificar');
+  if(btnVerif)btnVerif.style.display=esVerif?'inline-block':'none';
   // Mostrar pestaña uniformes si tiene permiso
   const esUnif=(DB.uniformeEvalIds||[]).includes(u.id);
   const btnUnif=document.getElementById('etab-uniformes');
