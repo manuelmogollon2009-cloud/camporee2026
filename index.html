@@ -400,6 +400,7 @@ tr:last-child td{border-bottom:none}
         <button class="tab-btn" onclick="gestTab('verificadores')" id="gtab-verificadores">🔍 Verificadores</button>
         <button class="tab-btn" onclick="gestTab('uniformes')" id="gtab-uniformes">👔 Uniformes</button>
         <button class="tab-btn" onclick="gestTab('certificado')" id="gtab-certificado">🏅 Certificado</button>
+        <button class="tab-btn" onclick="gestTab('estrellas')" id="gtab-estrellas">⭐ Estrellas</button>
         <button class="tab-btn" onclick="gestTab('historial')" id="gtab-historial">Historial ★</button>
         <button class="tab-btn" onclick="gestTab('credenciales')" id="gtab-credenciales">Credenciales</button>
         <button class="tab-btn" style="background:#FCEBEB;color:#791F1F;border-color:#F7C1C1" onclick="gestTab('nuevo')" id="gtab-nuevo">🔄 Nuevo campamento</button>
@@ -413,6 +414,7 @@ tr:last-child td{border-bottom:none}
       <div id="gp-verificadores" style="display:none"><div id="gestion-verificadores"></div></div>
       <div id="gp-uniformes" style="display:none"><div id="gestion-uniformes"></div></div>
       <div id="gp-certificado" style="display:none"><div id="gestion-certificado"></div></div>
+      <div id="gp-estrellas" style="display:none"><div id="gestion-estrellas"></div></div>
       <div id="gp-historial" style="display:none"><div id="gestion-historial"></div></div>
       <div id="gp-credenciales" style="display:none"><div id="gestion-creds"></div></div>
       <div id="gp-nuevo" style="display:none">
@@ -575,7 +577,8 @@ let DB={
   aprobadores:[],
   verificadoresIds:[],
   uniformeEvalIds:[],
-  uniformes:{}
+  uniformes:{},
+  estrellas:{s3:49,s4:63,s5:77,s6:91}
 };
 
 function getDisciplinaTotal(clubId){
@@ -612,10 +615,11 @@ function getDivColor(divId){
 
 function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
 function getStarInfo(pct){
-  if(pct>=91)return{n:6,label:'6 Estrellas',stars:'★★★★★★',color:'#B8860B',hdr:'#FFFDE7',barColor:'#FFD54F'};
-  if(pct>=77)return{n:5,label:'5 Estrellas',stars:'★★★★★',color:'#795548',hdr:'#EFEBE9',barColor:'#A1887F'};
-  if(pct>=63)return{n:4,label:'4 Estrellas',stars:'★★★★',color:'#607D8B',hdr:'#ECEFF1',barColor:'#90A4AE'};
-  if(pct>=49)return{n:3,label:'3 Estrellas',stars:'★★★',color:'#E65100',hdr:'#FFF3E0',barColor:'#FFAB40'};
+  const r=DB.estrellas||{s3:49,s4:63,s5:77,s6:91};
+  if(pct>=r.s6)return{n:6,label:'6 Estrellas',stars:'★★★★★★',color:'#B8860B',hdr:'#FFFDE7',barColor:'#FFD54F'};
+  if(pct>=r.s5)return{n:5,label:'5 Estrellas',stars:'★★★★★',color:'#795548',hdr:'#EFEBE9',barColor:'#A1887F'};
+  if(pct>=r.s4)return{n:4,label:'4 Estrellas',stars:'★★★★',color:'#607D8B',hdr:'#ECEFF1',barColor:'#90A4AE'};
+  if(pct>=r.s3)return{n:3,label:'3 Estrellas',stars:'★★★',color:'#E65100',hdr:'#FFF3E0',barColor:'#FFAB40'};
   return{n:2,label:'2 Estrellas',stars:'★★',color:'#C62828',hdr:'#FFEBEE',barColor:'#EF9A9A'};
 }
 function posMedal(n){return n===1?'🥇':n===2?'🥈':n===3?'🥉':n+'°';}
@@ -780,7 +784,7 @@ function admTab(t){
 }
 
 function gestTab(t){
-  ['clubes','evaluadores','admins','eventos','divisiones','disciplina','verificadores','uniformes','certificado','historial','credenciales','nuevo'].forEach(x=>{
+  ['clubes','evaluadores','admins','eventos','divisiones','disciplina','verificadores','uniformes','certificado','estrellas','historial','credenciales','nuevo'].forEach(x=>{
     document.getElementById('gp-'+x).style.display=x===t?'block':'none';
     document.getElementById('gtab-'+x).classList.toggle('active',x===t);
   });
@@ -793,8 +797,67 @@ function gestTab(t){
   if(t==='verificadores')renderGestionVerificadores();
   if(t==='uniformes')renderGestionUniformes();
   if(t==='certificado')renderGestionCertificado();
+  if(t==='estrellas')renderGestionEstrellas();
   if(t==='historial')renderGestionHistorial();
   if(t==='credenciales')renderGestionCreds();
+}
+
+function renderGestionEstrellas(){
+  const el=document.getElementById('gestion-estrellas');
+  const r=DB.estrellas||{s3:49,s4:63,s5:77,s6:91};
+  el.innerHTML=`<div class="card">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:6px">⭐ Rangos de Estrellas</h3>
+    <p style="font-size:12px;color:#666;margin-bottom:16px">Configure desde qué porcentaje empieza cada nivel de estrellas. Las 2 estrellas son el nivel base (0% hasta el inicio de 3 estrellas).</p>
+    <div style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#FFEBEE;border-radius:8px;margin-bottom:8px">
+        <span style="font-size:20px;color:#C62828">★★</span>
+        <p style="font-size:13px;color:#C62828;font-weight:600;flex:1">2 Estrellas</p>
+        <p style="font-size:12px;color:#666">0% — hasta inicio de 3★</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#FFF3E0;border-radius:8px;margin-bottom:8px">
+        <span style="font-size:20px;color:#E65100">★★★</span>
+        <p style="font-size:13px;color:#E65100;font-weight:600;flex:1">3 Estrellas desde</p>
+        <input type="number" id="est-s3" value="${r.s3}" min="1" max="99" style="width:70px;padding:6px;border:1px solid #FFAB40;border-radius:6px;text-align:center;font-size:13px"> <span style="font-size:13px;color:#666">%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#ECEFF1;border-radius:8px;margin-bottom:8px">
+        <span style="font-size:20px;color:#607D8B">★★★★</span>
+        <p style="font-size:13px;color:#607D8B;font-weight:600;flex:1">4 Estrellas desde</p>
+        <input type="number" id="est-s4" value="${r.s4}" min="1" max="99" style="width:70px;padding:6px;border:1px solid #90A4AE;border-radius:6px;text-align:center;font-size:13px"> <span style="font-size:13px;color:#666">%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#EFEBE9;border-radius:8px;margin-bottom:8px">
+        <span style="font-size:20px;color:#795548">★★★★★</span>
+        <p style="font-size:13px;color:#795548;font-weight:600;flex:1">5 Estrellas desde</p>
+        <input type="number" id="est-s5" value="${r.s5}" min="1" max="99" style="width:70px;padding:6px;border:1px solid #A1887F;border-radius:6px;text-align:center;font-size:13px"> <span style="font-size:13px;color:#666">%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#FFFDE7;border-radius:8px;margin-bottom:14px">
+        <span style="font-size:20px;color:#B8860B">★★★★★★</span>
+        <p style="font-size:13px;color:#B8860B;font-weight:600;flex:1">6 Estrellas desde</p>
+        <input type="number" id="est-s6" value="${r.s6}" min="1" max="100" style="width:70px;padding:6px;border:1px solid #FFD54F;border-radius:6px;text-align:center;font-size:13px"> <span style="font-size:13px;color:#666">%</span>
+      </div>
+    </div>
+    <div id="est-msg" style="display:none"></div>
+    <button class="btn btn-primary btn-sm" onclick="guardarEstrellas()">Guardar rangos</button>
+  </div>`;
+}
+
+async function guardarEstrellas(){
+  const s3=parseInt(document.getElementById('est-s3').value)||49;
+  const s4=parseInt(document.getElementById('est-s4').value)||63;
+  const s5=parseInt(document.getElementById('est-s5').value)||77;
+  const s6=parseInt(document.getElementById('est-s6').value)||91;
+  if(s3>=s4||s4>=s5||s5>=s6){
+    const msg=document.getElementById('est-msg');
+    msg.className='err';msg.style.display='block';
+    msg.textContent='Los rangos deben ir de menor a mayor: 3★ < 4★ < 5★ < 6★';
+    return;
+  }
+  DB.estrellas={s3,s4,s5,s6};
+  await saveDBToFirebase();
+  const msg=document.getElementById('est-msg');
+  msg.className='notif';msg.style.display='block';
+  msg.textContent=`✓ Rangos guardados: 3★ desde ${s3}% · 4★ desde ${s4}% · 5★ desde ${s5}% · 6★ desde ${s6}%`;
+  setTimeout(()=>msg.style.display='none',3000);
+  renderRankings();renderAdmMetrics();
 }
 
 async function confirmarNuevoCampamento(){
