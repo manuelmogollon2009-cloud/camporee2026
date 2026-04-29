@@ -665,8 +665,17 @@ async function saveEventsToFirebase(){
   const{doc,setDoc}=window.dbFuncs;
   const db=window.DB_REF;
   try{
-    await setDoc(doc(db,'camporee','events'),{data:EVENTS,updatedAt:Date.now()});
-    console.log('Eventos guardados:', EVENTS.length);
+    // Limpiar undefined antes de guardar
+    const eventsClean=EVENTS.map(e=>({
+      id:e.id||0,
+      div:e.div||1,
+      name:e.name||'',
+      max:e.max||0,
+      evalIds:e.evalIds||[],
+      cat:e.cat||null
+    }));
+    await setDoc(doc(db,'camporee','events'),{data:eventsClean,updatedAt:Date.now()});
+    console.log('Eventos guardados:', eventsClean.length);
   }catch(e){console.error('Error guardando eventos:',e);}
 }
 
@@ -1588,9 +1597,9 @@ async function saveUser(){
     if(!name||!max){err.style.display='block';err.textContent='Nombre y puntaje son obligatorios.';return;}
     if(mode==='edit'){
       const ev=EVENTS.find(e=>e.id===evId);
-      if(ev){ev.name=name;ev.div=div;ev.max=max;ev.cat=cat;}
+      if(ev){ev.name=name;ev.div=div;ev.max=max;ev.cat=cat||null;}
     } else {
-      EVENTS.push({id:DB.nextEventId++,div,name,max,evalIds:[],cat});
+      EVENTS.push({id:DB.nextEventId++,div,name,max,evalIds:[],cat:cat||null});
     }
     await saveDBToFirebase();
     await saveEventsToFirebase();
