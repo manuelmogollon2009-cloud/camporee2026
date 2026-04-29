@@ -661,12 +661,22 @@ async function saveScoresToFirebase(){
   try{await setDoc(doc(db,'camporee','scores'),{data:ST.scores,updatedAt:Date.now()});}catch(e){console.error(e);}
 }
 
+async function saveEventsToFirebase(){
+  const{doc,setDoc}=window.dbFuncs;
+  const db=window.DB_REF;
+  try{
+    await setDoc(doc(db,'camporee','events'),{data:EVENTS,updatedAt:Date.now()});
+    console.log('Eventos guardados:', EVENTS.length);
+  }catch(e){console.error('Error guardando eventos:',e);}
+}
+
 async function saveDBToFirebase(){
   const{doc,setDoc}=window.dbFuncs;
   const db=window.DB_REF;
   try{
     await setDoc(doc(db,'camporee','db'),{data:DB,updatedAt:Date.now()});
     await setDoc(doc(db,'camporee','events'),{data:EVENTS,updatedAt:Date.now()});
+    console.log('DB guardado, eventos:', EVENTS.length);
   }catch(e){console.error(e);}
 }
 
@@ -1578,11 +1588,13 @@ async function saveUser(){
     if(!name||!max){err.style.display='block';err.textContent='Nombre y puntaje son obligatorios.';return;}
     if(mode==='edit'){
       const ev=EVENTS.find(e=>e.id===evId);
-      ev.name=name;ev.div=div;ev.max=max;ev.cat=cat;
+      if(ev){ev.name=name;ev.div=div;ev.max=max;ev.cat=cat;}
     } else {
       EVENTS.push({id:DB.nextEventId++,div,name,max,evalIds:[],cat});
     }
-    await saveDBToFirebase();closeModal('modal-user');
+    await saveDBToFirebase();
+    await saveEventsToFirebase();
+    closeModal('modal-user');
     renderGestionEventos();populateAdmSelects();
     return;
   }
